@@ -6,7 +6,7 @@ Application configurations are configured in `/src/config/index.js`.
 
 ## Eslint
 
-Lint errors will be displayed in the terminal & console when you run `npm start`.
+Lint errors will be displayed in the terminal & console when you run `npm run dev`.
 
 For more details refer to the starter pack documentation about eslint [here](https://github.com/facebookincubator/create-react-app/tree/master/packages/eslint-config-react-app)
 
@@ -14,7 +14,7 @@ For more details refer to the starter pack documentation about eslint [here](htt
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm run dev`
 
 Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -42,7 +42,7 @@ See the section about [deployment](#deployment) for more information.
 #### Linux, macOS (Bash)
 
 ```bash
-HTTPS=true npm start
+HTTPS=true npm run dev
 ```
 
 Note that the server will use a self-signed certificate, so your web browser will almost definitely display a warning upon accessing the page.
