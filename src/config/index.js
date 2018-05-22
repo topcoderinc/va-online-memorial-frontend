@@ -6,7 +6,11 @@
  * App configurations
  */
 
-export const API_URL = 'http://localhost:4000/api' || process.env.REACT_APP_API_URL;
+export const API_URL = 'https://va-rest-api.herokuapp.com/api';
+/*
+'http://localhost:4000/api'
+  || process.env.REACT_APP_API_URL;
+  */
 
 export const META = {
   PAGE_TITLE_SUFFIX: 'VA Online Memorial',

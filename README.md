@@ -30,10 +30,6 @@ Starts the app in production mode, using
 [`http-server`](https://www.npmjs.com/package/http-server) as the production
 server.
 
-Presumably, if you want configure backend URL via environment variables,
-these env vars should be set prior to the build, and not just prior to the
-launch!
-
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.<br>
