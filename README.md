@@ -6,6 +6,9 @@ Application configurations are configured in `/src/config/index.js`.
 
 ## Eslint
 
+**WARNING:** At the moment, ESLint config is missing, thus linter does not really
+check anything.
+
 Lint errors will be displayed in the terminal & console when you run `npm run dev`.
 
 For more details refer to the starter pack documentation about eslint [here](https://github.com/facebookincubator/create-react-app/tree/master/packages/eslint-config-react-app)
@@ -21,6 +24,15 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
+
+### `npm start`
+Starts the app in production mode, using
+[`http-server`](https://www.npmjs.com/package/http-server) as the production
+server.
+
+Presumably, if you want configure backend URL via environment variables,
+these env vars should be set prior to the build, and not just prior to the
+launch!
 
 ### `npm test`
 
