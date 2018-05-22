@@ -6,6 +6,10 @@
  * App configurations
  */
 
+/* TODO: For some reason, the attempt to set default URL from environment
+ * variable, which is commented out below, does not work at Heroku. Most
+ * probably, there is something wrong with configuration of the build
+ * procedure. */
 export const API_URL = 'https://va-rest-api.herokuapp.com/api';
 /*
 'http://localhost:4000/api'
