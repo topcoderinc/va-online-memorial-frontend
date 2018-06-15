@@ -410,7 +410,7 @@ youremail@gmail.com...
  "db_name": "cgawsbrokerprodahm1484iv53qpm2",
  "host": "cg-aws-broker-prod-01fb6e1ed561.ci7nkegdizyy.us-gov-west-1.rds.amazona
 ws.com",
- "password": "e2280m2w0dn235ay00zd7uw1s",
+ "password": "******",
  "port": "5432",
  "uri": "postgres://u5hi9gyc5848rcib:e2280m2w0dn235ay00zd7uw1s@cg-aws-broker-pro
 d-01fb6e1ed561.ci7nkegdizyy.us-gov-west-1.rds.amazonaws.com:5432/cgawsbrokerprod
@@ -429,8 +429,8 @@ ahm1484iv53qpm2",
 
 `
 "db_url": "postgres://<Username>:<Password>@<Host IP or Name>:<Port>/<Database>"`
-`"db_url": "postgres://u5hi9gyc5848rcib:e2280m2w0dn235ay00zd7uw1s@cg-aws-broker-pro
-d-01fb6e1ed561.ci7nkegdizyy.us-gov-west-1.rds.amazonaws.com:5432/cgawsbrokerprodahm1484iv53qpm2"
+`"db_url": "postgres://*****:*****@cg-aws-broker-pro
+d-01fb6e1ed561.ci7nkegdizyy.us-gov-west-1.rds.amazonaws.com:5432/*****"
 `
 
 - Replace the `db_url` with the provided one as above
@@ -482,9 +482,9 @@ Skipping call to client CLI. Connection information:
 
 Host: localhost
 Port: 64970
-Username: u5hi9gyc5848rcib
-Password: e2280m2w0dn235ay00zd7uw1s
-Name: cgawsbrokerprodahm1484iv53qpm2
+Username: *******
+Password: ******
+Name: ******
 
 Leave this terminal open while you want to use the SSH tunnel. Press Control-C t
 o stop.
