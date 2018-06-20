@@ -10,7 +10,7 @@
  * variable, which is commented out below, does not work at Heroku. Most
  * probably, there is something wrong with configuration of the build
  * procedure. */
-export const API_URL = 'https://va-rest-api.herokuapp.com/api';
+export const API_URL = 'https://rest-api.app.cloud.gov/api';
 /*
 'http://localhost:4000/api'
   || process.env.REACT_APP_API_URL;
@@ -27,9 +27,8 @@ export const DEFAULT_SERVER_ERROR = 'There was an error processing your request.
 export const VETERAN_NAME_LIMIT = 30;
 
 export const DEFAULT_PROFILE_DATA = {
-  msgDescription: "Share a message, photo, or memory of John Brown. You can also research historical information (if applicable) and award a badge of honor.",
   acceptedProof: "Please provide next-of-kin information (name, relationship to the deceased, phone number, email address). No Personal Identifiable Information, please (birthdates, social security numbers, etc). If a cemetery has already established your NOK designation, and you have proof of this, you can include that documentation as well.",
-  profileImgSrc: "/profile-pic.png",
+  profileImgSrc: "/profile-pic-placeholder.svg",
   "flaggingOpts": [
     {
       "id": 1,

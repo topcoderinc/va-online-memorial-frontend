@@ -4,6 +4,7 @@ import Pagination from "react-js-pagination";
 
 import './styles.scss';
 import AuthService from "../../services/auth";
+import ProfilePicture from '../ProfilePicture';
 
 class SearchTable extends Component {
   constructor(props) {
@@ -90,8 +91,11 @@ class SearchTable extends Component {
                     <tr key={i}>
                       <td>
                         <div className="td-user">
-                          <a onClick={() => this.onItemClick(`/dashboard/${item.id}`)} className="user"><img
-                            src={item.profilePicture || 'i1.png'} alt=""/>
+                          <a onClick={() => this.onItemClick(`/dashboard/${item.id}`)} className="user">
+                            <ProfilePicture imageSrc={item.profilePicture}
+                                            height={50}
+                                            width={50}
+                            />
                             <span dangerouslySetInnerHTML={{ __html: this.highlightText(keyword, item.name) }}/>
                           </a>
                           <div className="txt view-md">{item.burriedAt}</div>
