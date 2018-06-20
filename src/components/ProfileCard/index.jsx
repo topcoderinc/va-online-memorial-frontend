@@ -4,6 +4,7 @@ import Dropzone from 'react-dropzone';
 import {Scrollbars} from 'react-custom-scrollbars';
 import './profile-card.scss';
 import CommonService from "../../services/common";
+import ProfilePicture from '../ProfilePicture';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 
@@ -336,7 +337,7 @@ class ProfileCard extends Component {
       this.showPopup('isThanksPop')();
     })
   }
-  
+
   render() {
     const $p = !!this.props.attr ? this.props.attr : {};
     return (
@@ -349,7 +350,9 @@ class ProfileCard extends Component {
                   <i className="ico-flower"></i>
                   
                   <h5>{$p.msgTitle}</h5>
-                  <div className="desc">{$p.msgDescription} <a>Read more</a></div>
+                  <div className="desc">
+                    Share a message, photo, or memory of {$p.profileName}. You can also research historical information (if applicable) and award a badge of honor. <a>Read more</a>
+                  </div>
                 </div>
               </div>
               <div className="col col-opts">
@@ -370,12 +373,12 @@ class ProfileCard extends Component {
         <div className="profile-details-wrap">
           <div className="viewport">
             <div className="profile-details">
-              <div className="profile-picture">
-                <img src={$p.profileImgSrc} alt=""/>
+              <ProfilePicture imageSrc={$p.profileImgSrc}
+                              imageAlt={$p.profileName}>
                 <a className="lnk send-request-lnk"
                    onClick={this.showPopup('isNokPopup')}
                 >Send NOK Request</a>
-              </div>
+              </ProfilePicture>
               <div className="bar-basicinfo">
                 <div className="col col-name">
                   <h3>{$p.profileName}</h3>
