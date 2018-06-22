@@ -13,9 +13,6 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-  {
-  plugins: [ new UglifyJSPlugin() ]
-  };
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -106,6 +103,7 @@ module.exports = {
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
       new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+      new UglifyJSPlugin(),
     ],
   },
   module: {
