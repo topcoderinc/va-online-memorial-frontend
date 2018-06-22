@@ -98,7 +98,6 @@ class SearchTable extends Component {
                             />
                             <span dangerouslySetInnerHTML={{ __html: this.highlightText(keyword, item.name) }}/>
                           </a>
-                          <div className="txt view-md">{item.burriedAt}</div>
                         </div>
                       </td>
                       <td>{item.life}</td>
