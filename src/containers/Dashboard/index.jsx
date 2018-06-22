@@ -3,6 +3,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import dataAction from '../../actions/dataAction';
 import actions from '../../actions/auth';
+import uiActions from '../../actions/ui';
 import MainHeaderComponent from '../../components/MainHeader';
 import MainFooter from '../../components/MainFooter';
 import ProfileCard from '../../components/ProfileCard';
@@ -389,14 +390,16 @@ class Search extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ...state.dataReducer
+    ...state.dataReducer,
+    ui: state.ui
   }
 };
 
 const matchDispatchToProps = (dispatch) => {
   return {
     actions: bindActionCreators({ ...actions }, dispatch),
-    dataAction: bindActionCreators({ ...dataAction }, dispatch)
+    dataAction: bindActionCreators({ ...dataAction }, dispatch),
+    ui: bindActionCreators({ ...uiActions }, dispatch)
   }
 };
 

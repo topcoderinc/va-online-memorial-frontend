@@ -9,13 +9,10 @@ import CommonService from "../../services/common";
 import Spinner from '../Spinner';
 import dataAction from '../../actions/dataAction';
 import authAction from '../../actions/auth';
+import uiAction from '../../actions/ui';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {debounce, extend, map, isEmpty} from 'lodash';
-
-const mapStateToProps = (state) => {
-  return extend({}, state.dataReducer);
-};
 
 class Masterhead extends Component {
   constructor(props) {
@@ -332,14 +329,14 @@ class Masterhead extends Component {
   showSearchPopup() {
     this.setState({ 'isLoginActive': false });
     this.setState({ 'isRegisterActive': false });
-    this.setState({ 'isSearchFocused': true });
+    this.props.uiAction.showSearchModal();
 
     document.addEventListener('click', this.handleOutsideClickHandler(this));
   }
 
   //hides searchpop
   hideSearchPopup() {
-    this.setState({ 'isSearchFocused': false });
+    this.props.uiAction.hideSearchModal();
     if (document.querySelector('.search-modal')) {
       document.querySelector('.search-modal').removeEventListener('click', this.handleOutsideClick);
     }
@@ -546,7 +543,7 @@ class Masterhead extends Component {
             </div>
           </div>
 
-          <div className={"search-modal " + (!!this.state.isSearchFocused ? 'on' : '')}
+          <div className={"search-modal " + (this.props.ui.showSearchModal ? 'on' : '')}
                onClick={this.hideSearchPopup}
           >
             <Scrollbars className="custom-scrollar scrollbar-md"
@@ -678,10 +675,18 @@ class Masterhead extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    ...state.dataReducer,
+    ui: state.ui
+  }
+};
+
 const matchDispatchToProps = (dispatch) => {
   return {
     dataAction: bindActionCreators(extend({}, dataAction), dispatch),
     authAction: bindActionCreators(extend({}, authAction), dispatch),
+    uiAction: bindActionCreators(extend({}, uiAction), dispatch)
   };
 };
 
