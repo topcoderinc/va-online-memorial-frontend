@@ -1,12 +1,17 @@
 import superagent from 'superagent';
 import superagentPromise from 'superagent-promise';
 import {toast} from 'react-toastify';
+import * as Promise from 'bluebird';
 
 import {
   API_URL as FALLBACK_API_URL
 } from '../config';
 import CommonService from "./common";
 import AuthService from "./auth";
+
+Promise.config( {
+  cancellation: true
+});
 
 const request = superagentPromise(superagent, Promise);
 const postUrl = {

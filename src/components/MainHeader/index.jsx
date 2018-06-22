@@ -11,7 +11,7 @@ import dataAction from '../../actions/dataAction';
 import authAction from '../../actions/auth';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {extend, map, isEmpty} from 'lodash';
+import {debounce, extend, map, isEmpty} from 'lodash';
 
 const mapStateToProps = (state) => {
   return extend({}, state.dataReducer);
@@ -31,11 +31,13 @@ class Masterhead extends Component {
     this.showSearchPopup = this.showSearchPopup.bind(this);
     this.hideSearchPopup = this.hideSearchPopup.bind(this);
     this.stopPropagation = this.stopPropagation.bind(this);
+    this.searchRequest = debounce(this.searchRequest, 500);
 
     this.state = {
       isLoginActive: false,
       isRegisterActive: false,
       keyword: '',
+      keywordForResults: '',
       isSearchFocused: false,
       logger: {},
       error: {},
@@ -138,7 +140,20 @@ class Masterhead extends Component {
     const state = this.state;
     state[ key ] = value;
     state[ 'offset' ] = 0;
-    this.setState(state, () => this.props.dataAction.searchVeterans(this.makeFilters()));
+    this.setState(state);
+    this.searchRequest();
+  }
+
+  searchRequest() {
+    if (this.currentSearch) {
+      this.currentSearch.cancel();
+    }
+
+    this.currentSearch = this.props.dataAction.searchVeterans(this.makeFilters()).then(() => {
+      const newState = this.state;
+      newState.keywordForResults = this.state.keyword;
+      this.setState(newState);
+    });
   }
 
   handleBirthDateChange(key, value) {
@@ -641,7 +656,7 @@ class Masterhead extends Component {
                   {veterans.items && veterans.items.length > 0
                     ? (<div>
                         <h3><span className="count"> {veterans.total} </span> Results for <span
-                          className='keyword'>“{this.state.keyword}”</span></h3>
+                          className='keyword'>“{this.state.keywordForResults}”</span></h3>
                         <SearchTable attr={{
                           keyword: this.state.keyword, searchedResults: veterans.items,
                           limit: this.props.filters.limit || 10,
