@@ -138,7 +138,15 @@ class Masterhead extends Component {
     const state = this.state;
     state[ key ] = value;
     state[ 'offset' ] = 0;
-    this.setState(state, () => this.props.dataAction.searchVeterans(this.makeFilters()));
+    this.setState(state, this.searchRequest);
+  }
+
+  searchRequest() {
+    if (this.currentSearchRequest) {
+      this.currentSearchRequest.cancel();
+    }
+
+    this.currentSearchRequest = this.props.dataAction.searchVeterans(this.makeFilters());
   }
 
   handleBirthDateChange(key, value) {
