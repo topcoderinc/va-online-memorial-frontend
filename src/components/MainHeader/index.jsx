@@ -595,7 +595,7 @@ class Masterhead extends Component {
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Date of Death' }}>
+                  <Toggler attr={{ title: 'Date of Passing' }}>
                     <div className="toggler-con fx fields-3">
                       <div className="gr gr-1">
                         <h6>Month</h6>
