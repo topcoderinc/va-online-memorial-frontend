@@ -7,6 +7,7 @@ import CommonService from "../../services/common";
 import ProfilePicture from '../ProfilePicture';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as forms from '../../constants/forms';
 
 class ProfileCard extends Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class ProfileCard extends Component {
     
     this.togglePopup = this.togglePopup.bind(this);
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
+    this.handleStoryContentInputChange = this.handleStoryContentInputChange.bind(this);
     this.hidePopup = this.hidePopup.bind(this);
     this.hideAllPopup = this.hideAllPopup.bind(this);
     this.toggleBadgeSelect = this.toggleBadgeSelect.bind(this);
@@ -96,6 +98,13 @@ class ProfileCard extends Component {
     }
     
     this.togglePopup(this.state.activePop)();
+  }
+
+  handleStoryContentInputChange(event) {
+    if (event.target.value.length > forms.CHARACTER_LIMIT_255) {
+      return;
+    }
+    this.setState({ storyContent: event.target.value });
   }
   
   // renderThumb
@@ -484,7 +493,9 @@ class ProfileCard extends Component {
                   <input type="text"
                          value={this.state.storyTitle}
                          onChange={event => this.setState({ storyTitle: event.target.value })}
-                         className="textctrl"/>
+                         className="textctrl"
+                         maxLength={forms.CHARACTER_LIMIT_255}
+                  />
                 </div>
               </div>
               <div className="fieldset">
@@ -492,8 +503,12 @@ class ProfileCard extends Component {
                 <div className="val">
                   <textarea className="textarea textctrl"
                             value={this.state.storyContent}
-                            onChange={event => this.setState({ storyContent: event.target.value })}
+                            onChange={event => this.handleStoryContentInputChange(event)}
+                            maxLength={forms.CHARACTER_LIMIT_255}
                   />
+                </div>
+                <div className="text-character-counter">
+                  {this.state.storyContent.length} / 255 characters remaining
                 </div>
               </div>
               <div className="actions fx">

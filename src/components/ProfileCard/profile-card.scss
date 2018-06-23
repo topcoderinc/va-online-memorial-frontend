@@ -838,6 +838,13 @@
     height: 40px;
     line-height: 38px;
   }
+  .text-character-counter{
+    margin-top: 10px;
+
+    @include viewMd{
+      font-size: 14px;
+    }
+  }
 
   .dropzone{
     &.inline{
@@ -1161,4 +1168,3 @@
     padding-left: 38px;
   }
 }
-  
