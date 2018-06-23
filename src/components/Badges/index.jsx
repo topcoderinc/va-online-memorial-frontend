@@ -45,7 +45,7 @@ class Badges extends Component {
   salutePost() {
     APIService.salutePost(this.type, this.state.activeStory.id).then(() => {
       this.setState({ saluted: true });
-      CommonService.showSuccess("Story salute successfully");
+      CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
 
@@ -55,7 +55,7 @@ class Badges extends Component {
   sharePost() {
     APIService.sharePost(this.type, this.state.activeStory.id).then(() => {
       this.setState({ saluted: true });
-      CommonService.showSuccess("Story salute successfully");
+      CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
 
