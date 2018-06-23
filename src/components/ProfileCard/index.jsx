@@ -266,10 +266,12 @@ class ProfileCard extends Component {
   onUploadPhoto() {
     const title = this.refs.photoCaption.value;
     const files = this.state.files;
+    const whiteSpaceOnlyRegExp = /^\s+$/;
+
     if (files.length <= 0) {
       return CommonService.showError("You at least need choose one photo.");
     }
-    if (_.isEmpty(title)) {
+    if (_.isEmpty(title) || whiteSpaceOnlyRegExp.test(title)) {
       return CommonService.showError("Photo caption should not be empty.");
     }
     
