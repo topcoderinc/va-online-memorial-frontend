@@ -253,7 +253,7 @@ class ProfileCard extends Component {
       return false;
     }
 
-    const newDate = moment(`${year}-${month}-${day}`, 'YYYY-M-D');
+    const newDate = moment(`${year}-${month}-${day}`, 'YYYY-M-D', true);
 
     if (!newDate.isValid()) {
       // Re-format the Date String in the same order as the input fields.
