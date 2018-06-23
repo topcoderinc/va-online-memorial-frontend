@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import {createLogger} from 'redux-logger';
-import {createStore, applyMiddleware} from 'redux';
+import {createStore, applyMiddleware, compose} from 'redux';
 import {Route, BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import allReducers from './reducers';
@@ -13,13 +13,16 @@ import routes from './routes';
 import './styles/styles.scss';
 
 const middlewares = [ thunk ];
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 // Only use the redux-logger middleware in development
 if (process.env.NODE_ENV === `development`) {
   middlewares.push(createLogger());
 }
 
-const store = createStore(allReducers, applyMiddleware(...middlewares));
+const store = createStore(allReducers, composeEnhancers(
+  applyMiddleware(...middlewares)
+));
 
 // Helper function that reders single route
 const renderRoute = (route, props) => {

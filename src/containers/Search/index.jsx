@@ -24,13 +24,13 @@ class Search extends Component {
     this.handlePageChange = this.handlePageChange.bind(this);
     
     this.$s = this.$s.bind(this);
-    
+
     this.state = {
       isLoginActive: false,
       isRegisterActive: false,
       keyword: props.filters.keyword || '',
       isSearchFocused: false,
-      
+
       // filters
       branchId: props.filters.branchIds || '0',
       squadronShip: props.filters.squadronShip || '',
@@ -38,12 +38,12 @@ class Search extends Component {
       cemeteryId: props.filters.cemeteryId || '0',
       served: props.filters.served || '',
       division: props.filters.division || '',
-      birthDateYear: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getFullYear() + '' : '',
-      birthDateMonth: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getMonth() + 1 + '' : '',
-      birthDateDay: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getDay() + '' : '',
-      deathDateYear: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getFullYear() + '' : '',
-      deathDateMonth: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getMonth() + 1 + '' : '',
-      deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getDay() + '' : '',
+      birthDateYear: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCFullYear() + '' : '',
+      birthDateMonth: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCMonth() + 1 + '' : '',
+      birthDateDay: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCDate() + '' : '',
+      deathDateYear: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCFullYear() + '' : '',
+      deathDateMonth: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCMonth() + 1 + '' : '',
+      deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCDate() + '' : '',
     };
   }
   
@@ -61,12 +61,12 @@ class Search extends Component {
       division: nextProps.filters.division || '',
       cemeteryId: nextProps.filters.cemeteryId || '0',
       offset: nextProps.filters.offset || 0,
-      birthDateYear: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getFullYear() + '' : '',
-      birthDateMonth: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getMonth() + 1 + '' : '',
-      birthDateDay: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getDate() + '' : '',
-      deathDateYear: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getFullYear() + '' : '',
-      deathDateMonth: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getMonth() + 1 + '' : '',
-      deathDateDay: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getDate() + '' : '',
+      birthDateYear: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCFullYear() + '' : '',
+      birthDateMonth: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCMonth() + 1 + '' : '',
+      birthDateDay: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCDate() + '' : '',
+      deathDateYear: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCFullYear() + '' : '',
+      deathDateMonth: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCMonth() + 1 + '' : '',
+      deathDateDay: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCDate() + '' : '',
     });
     // }
   }
@@ -85,9 +85,8 @@ class Search extends Component {
   }
   
   zeroFill(s) {
-    console.log(s, s.length);
     if (s.length === 1) {
-      return 0 + s;
+      return '0' + s;
     }
     return s;
   }
@@ -201,17 +200,17 @@ class Search extends Component {
                     <div className="gr gr-1">
                       <h6>Month</h6>
                       <input type="text" value={this.state.birthDateMonth} className="textctrl mm"
-                             onChange={(event) => this.handleDeathDateChange('birthDateMonth', event.target.value)}/>
+                             onChange={(event) => this.handleBirthDateChange('birthDateMonth', event.target.value)}/>
                     </div>
                     <div className="gr gr-2">
                       <h6>Day</h6>
                       <input type="text" value={this.state.birthDateDay} className="textctrl dd"
-                             onChange={(event) => this.handleDeathDateChange('birthDateDay', event.target.value)}/>
+                             onChange={(event) => this.handleBirthDateChange('birthDateDay', event.target.value)}/>
                     </div>
                     <div className="gr gr-3">
                       <h6>Year</h6>
                       <input type="text" value={this.state.birthDateYear} className="textctrl yy"
-                             onChange={(event) => this.handleDeathDateChange('birthDateYear', event.target.value)}/>
+                             onChange={(event) => this.handleBirthDateChange('birthDateYear', event.target.value)}/>
                     </div>
                   </div>
                 </Toggler>
