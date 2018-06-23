@@ -57,7 +57,7 @@ class ProfileCard extends Component {
       activeFlagId: 1,
     };
   }
-  
+
   componentDidMount() {
     const that = this;
     window.showProfileFlagPopUp = (type, id) => {
@@ -70,7 +70,11 @@ class ProfileCard extends Component {
       });
     };
   }
-  
+
+  static containsOnlyWhitespace(string) {
+    return /^\s+$/.test(string);
+  }
+
   componentWillUnmount() {
     delete window.showProfileFlagPopUp;
   }
@@ -172,25 +176,25 @@ class ProfileCard extends Component {
     })
     
   }
-  
+
   /**
    * send nok request
    */
   sendRequest() {
-    let nokFullName = this.refs.nokFullName;
-    let nokEmail = this.refs.nokEmail;
+    let nokFullName = this.refs.nokFullName.value;
+    let nokEmail = this.refs.nokEmail.value;
     let error = {
       nokFullName: false,
       nokEmail: false
     };
     let isValid = true;
     const pattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-    
-    if (!nokFullName.value) {
+
+    if (!nokFullName || ProfileCard.containsOnlyWhitespace(nokFullName)) {
       error.nokFullName = true;
       isValid = false;
     }
-    if (!nokEmail.value || !nokEmail.value.match(pattern)) {
+    if (!nokEmail || !nokEmail.match(pattern)) {
       error.nokEmail = true;
       isValid = false;
     }
@@ -266,12 +270,11 @@ class ProfileCard extends Component {
   onUploadPhoto() {
     const title = this.refs.photoCaption.value;
     const files = this.state.files;
-    const whiteSpaceOnlyRegExp = /^\s+$/;
 
     if (files.length <= 0) {
       return CommonService.showError("You at least need choose one photo.");
     }
-    if (_.isEmpty(title) || whiteSpaceOnlyRegExp.test(title)) {
+    if (_.isEmpty(title) || ProfileCard.containsOnlyWhitespace(title)) {
       return CommonService.showError("Photo caption should not be empty.");
     }
     
