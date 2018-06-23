@@ -16,8 +16,6 @@ class Search extends Component {
     this.toggleFilter = this.toggleFilter.bind(this);
     this.closeFilter = this.closeFilter.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleBirthDateChange = this.handleBirthDateChange.bind(this);
-    this.handleDeathDateChange = this.handleDeathDateChange.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.makeFilters = this.makeFilters.bind(this);
     this.updateResult = this.updateResult.bind(this);
@@ -122,21 +120,7 @@ class Search extends Component {
     state[ 'offset' ] = 0;
     this.setState(state);
   }
-  
-  handleBirthDateChange(key, value) {
-    const state = this.state;
-    state[ key ] = value;
-    state[ 'offset' ] = 0;
-    this.setState(state);
-  }
-  
-  handleDeathDateChange(key, value) {
-    const state = this.state;
-    state[ key ] = value;
-    state[ 'offset' ] = 0;
-    this.setState(state);
-  }
-  
+
   updateResult() {
     this.props.dataAction.searchVeterans(this.makeFilters());
   }
@@ -200,17 +184,17 @@ class Search extends Component {
                     <div className="gr gr-1">
                       <h6>Month</h6>
                       <input type="text" value={this.state.birthDateMonth} className="textctrl mm"
-                             onChange={(event) => this.handleBirthDateChange('birthDateMonth', event.target.value)}/>
+                             onChange={(event) => this.handleChange('birthDateMonth', event.target.value)}/>
                     </div>
                     <div className="gr gr-2">
                       <h6>Day</h6>
                       <input type="text" value={this.state.birthDateDay} className="textctrl dd"
-                             onChange={(event) => this.handleBirthDateChange('birthDateDay', event.target.value)}/>
+                             onChange={(event) => this.handleChange('birthDateDay', event.target.value)}/>
                     </div>
                     <div className="gr gr-3">
                       <h6>Year</h6>
                       <input type="text" value={this.state.birthDateYear} className="textctrl yy"
-                             onChange={(event) => this.handleBirthDateChange('birthDateYear', event.target.value)}/>
+                             onChange={(event) => this.handleChange('birthDateYear', event.target.value)}/>
                     </div>
                   </div>
                 </Toggler>
@@ -220,17 +204,17 @@ class Search extends Component {
                     <div className="gr gr-1">
                       <h6>Month</h6>
                       <input type="text" value={this.state.deathDateMonth} className="textctrl mm"
-                             onChange={(event) => this.handleDeathDateChange('deathDateMonth', event.target.value)}/>
+                             onChange={(event) => this.handleChange('deathDateMonth', event.target.value)}/>
                     </div>
                     <div className="gr gr-2">
                       <h6>Day</h6>
                       <input type="text" value={this.state.deathDateDay} className="textctrl dd"
-                             onChange={(event) => this.handleDeathDateChange('deathDateDay', event.target.value)}/>
+                             onChange={(event) => this.handleChange('deathDateDay', event.target.value)}/>
                     </div>
                     <div className="gr gr-3">
                       <h6>Year</h6>
                       <input type="text" value={this.state.deathDateYear} className="textctrl yy"
-                             onChange={(event) => this.handleDeathDateChange('deathDateYear', event.target.value)}/>
+                             onChange={(event) => this.handleChange('deathDateYear', event.target.value)}/>
                     </div>
                   </div>
                 </Toggler>
