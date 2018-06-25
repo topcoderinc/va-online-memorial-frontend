@@ -46,12 +46,12 @@ class Masterhead extends Component {
       branchId: props.filters.branchIds || '0',
       squadronShip: props.filters.squadronShip || '',
       cemeteryId: props.filters.cemeteryId || '0',
-      birthDateYear: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getFullYear() + '' : '',
-      birthDateMonth: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getMonth() + 1 + '' : '',
-      birthDateDay: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getDay() + '' : '',
-      deathDateYear: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getFullYear() + '' : '',
-      deathDateMonth: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getMonth() + 1 + '' : '',
-      deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getDay() + '' : '',
+      birthDateYear: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCFullYear() + '' : '',
+      birthDateMonth: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCMonth() + 1 + '' : '',
+      birthDateDay: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCDate() + '' : '',
+      deathDateYear: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCFullYear() + '' : '',
+      deathDateMonth: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCMonth() + 1 + '' : '',
+      deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCDate() + '' : '',
       served: props.filters.served || '',
       division: props.filters.division || '',
     };
@@ -91,19 +91,19 @@ class Masterhead extends Component {
         served: nextProps.filters.served || '',
         division: nextProps.filters.division || '',
         cemeteryId: nextProps.filters.cemeteryId || '0',
-        birthDateYear: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getFullYear() + '' : '',
-        birthDateMonth: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getMonth() + 1 + '' : '',
-        birthDateDay: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getDate() + '' : '',
-        deathDateYear: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getFullYear() + '' : '',
-        deathDateMonth: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getMonth() + 1 + '' : '',
-        deathDateDay: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getDate() + '' : '',
+        birthDateYear: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCFullYear() + '' : '',
+        birthDateMonth: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCMonth() + 1 + '' : '',
+        birthDateDay: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCDate() + '' : '',
+        deathDateYear: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCFullYear() + '' : '',
+        deathDateMonth: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCMonth() + 1 + '' : '',
+        deathDateDay: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCDate() + '' : '',
       });
     }
   }
 
   zeroFill(s) {
     if (s.length === 1) {
-      return 0 + s;
+      return '0' + s;
     }
     return s;
   }
