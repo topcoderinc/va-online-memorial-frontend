@@ -31,8 +31,6 @@ class Masterhead extends Component {
     this.searchRequest = debounce(this.searchRequest, 500);
 
     this.state = {
-      isLoginActive: false,
-      isRegisterActive: false,
       keyword: '',
       keywordForResults: '',
       isSearchFocused: false,
@@ -79,7 +77,7 @@ class Masterhead extends Component {
     this.props.dataAction.getAllBranches();
     this.props.dataAction.getAllCemeteries();
     window.showLoginDialog = () => {
-      this.setState({ isLoginActive: true, isRegisterActive: false });
+      this.props.uiAction.showLoginPopup();
     }
   }
 
@@ -215,8 +213,8 @@ class Masterhead extends Component {
         this.setState({
           logger: user,
           showSpinner: false,
-          'isLoginActive': false
         });
+        this.props.uiAction.hideLoginPopup();
         this.props.authAction.login(user);
       }).catch(err => {
         error.user = true;
@@ -294,12 +292,12 @@ class Masterhead extends Component {
         CommonService.showSuccess(`User with email ${user.email} register successful.`);
         this.setState({
           showSpinner: false,
-          'isRegisterActive': false
         });
+        this.props.uiAction.hideRegisterPopup();
       }).catch(err => {
         this.setState({
+          showSpinner: false,
           regerror: {
-            showSpinner: false,
             registerEmail: true,
             registerUser: true,
           }
@@ -327,8 +325,6 @@ class Masterhead extends Component {
 
   //show searchpop
   showSearchPopup() {
-    this.setState({ 'isLoginActive': false });
-    this.setState({ 'isRegisterActive': false });
     this.props.uiAction.showSearchModal();
 
     document.addEventListener('click', this.handleOutsideClickHandler(this));
@@ -356,7 +352,7 @@ class Masterhead extends Component {
 
   render() {
     const { notifications, addClass, userName } = this.props.attr;
-    const { veterans, branches, cemeteries, nokRequests } = this.props;
+    const { veterans, branches, cemeteries, nokRequests, ui, uiAction } = this.props;
     const nok = this.state.logger.role !== 'admin' && CommonService.isNok(nokRequests);
     const notiPopup = notifications && notifications.length > 0 &&
       (
@@ -404,10 +400,10 @@ class Masterhead extends Component {
               ? (
                 <div className="actions">
                   <a className="btn btn-primary"
-                     onClick={this.$s({ 'isLoginActive': true, 'isRegisterActive': false })}
+                     onClick={uiAction.showLoginPopup}
                   >Login</a>
                   <a className="btn btn-clear"
-                     onClick={this.$s({ 'isRegisterActive': true, 'isLoginActive': false })}
+                     onClick={uiAction.showRegisterPopup}
                   >Register</a>
                 </div>
               )
@@ -450,10 +446,10 @@ class Masterhead extends Component {
             </div>
           }
 
-          <div className={(this.state.isLoginActive ? 'open' : '') + ' header-card login-card '}>
+          <div className={(ui.isLoginActive ? 'open' : '') + ' header-card login-card '}>
             <h2>Login Account</h2>
             <a className="close"
-               onClick={this.$s({ 'isLoginActive': false })}
+               onClick={uiAction.hideLoginPopup}
             > </a>
 
             <div className="fieldset">
@@ -484,10 +480,10 @@ class Masterhead extends Component {
             </div>
           </div>
 
-          <div className={(this.state.isRegisterActive ? 'open' : '') + ' header-card register-card '}>
+          <div className={(ui.isRegisterActive ? 'open' : '') + ' header-card register-card '}>
             <h2>Create Account</h2>
             <a className="close"
-               onClick={this.$s({ 'isRegisterActive': false })}
+               onClick={uiAction.hideRegisterPopup}
             > </a>
 
             <form className="frm">
@@ -498,6 +494,8 @@ class Masterhead extends Component {
                     <input type="email"
                            className={"textctrl " + (!!this.state.regerror.registerEmail ? 'error' : '')}
                            ref="registerEmail"
+                           value={ui.registrationFormEmail}
+                           onChange={(event) => uiAction.registrationFormSetEmail(event.target.value)}
                     />
                   </div>
                 </div>
@@ -543,7 +541,7 @@ class Masterhead extends Component {
             </div>
           </div>
 
-          <div className={"search-modal " + (this.props.ui.showSearchModal ? 'on' : '')}
+          <div className={"search-modal " + (ui.showSearchModal ? 'on' : '')}
                onClick={this.hideSearchPopup}
           >
             <Scrollbars className="custom-scrollar scrollbar-md"
