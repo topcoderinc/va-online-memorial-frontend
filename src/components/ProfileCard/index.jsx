@@ -233,25 +233,49 @@ class ProfileCard extends Component {
     eventMonth = _.toNumber(eventMonth);
     eventYear = _.toNumber(eventYear);
     eventDay = _.toNumber(eventDay);
-    if (!_.isNumber(eventMonth) || eventMonth < 1 || eventMonth > 12) {
-      return CommonService.showError("You must enter a valid month");
+
+    if (!this.isAddEventDateValid(eventYear, eventMonth, eventDay)) {
+      return;
     }
-    if (!_.isNumber(eventDay) || eventDay < 1 || eventDay > 31) {
-      return CommonService.showError("You must enter a valid day");
-    }
-    if (!_.isNumber(eventYear) || eventYear < 1000 || eventYear > 3000) {
-      return CommonService.showError("You must enter a valid year");
-    }
+
     if (eventSelected <= 0) {
       return CommonService.showError("You must select a event");
     }
-    
-    this.props.onAddEvent({ eventDate: `${eventYear}-${eventMonth}-${eventDay}`, eventTypeId: eventSelected }, () => {
+
+    const dateString = `${eventYear}-${eventMonth}-${eventDay}`;
+
+    this.props.onAddEvent({ eventDate: dateString, eventTypeId: eventSelected }, () => {
       this.setState({
         eventYear: '', eventMonth: '', eventDay: '', eventSelected: 0
       });
       this.hideAllPopup();
     })
+  }
+
+  isAddEventDateValid(year, month, day) {
+    if (!_.isNumber(month) || month < 1 || month > 12) {
+      CommonService.showError("You must enter a valid month");
+      return false;
+    }
+    if (!_.isNumber(day) || day < 1 || day > 31) {
+      CommonService.showError("You must enter a valid day");
+      return false;
+    }
+    if (!_.isNumber(year) || year < 1000 || year > 3000) {
+      CommonService.showError("You must enter a valid year");
+      return false;
+    }
+
+    const newDate = moment(`${year}-${month}-${day}`, 'YYYY-M-D', true);
+
+    if (!newDate.isValid()) {
+      // Re-format the Date String in the same order as the input fields.
+      const inputDate = `${month}-${day}-${year}`;
+      CommonService.showError(`${inputDate} is not a valid date`);
+      return false;
+    }
+
+    return true;
   }
   
   /**
