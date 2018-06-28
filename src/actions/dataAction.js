@@ -438,7 +438,6 @@ function downloadFile(file) {
     API.downloadFile(file.fileURL).then(res => {
       const blob = new Blob([ res.response ], { type: file.mimeType });
       fileSaver.saveAs(blob, (file.name));
-      toast('file download success', { type: 'info' });
     });
   }
 }
