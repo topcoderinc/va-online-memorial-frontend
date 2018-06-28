@@ -31,11 +31,13 @@ const AdminRequest = ({title, requests, archived, downloadFile, decline, approve
             <div className="submitted-proof">
               <div className="proof-head">
                 <span>Submitted Proof</span>
-                <a className="btn">Download</a>
               </div>
               {
                 get(item, 'proofs', []).map((p, j)=>(
-                  <div key={j} className="proof-item"><a onClick={() => downloadFile(p)} >{p.name}</a></div>
+                  <div key={j} className="proof-item">
+                    <a onClick={() => downloadFile(p)}>{p.name}</a>
+                    <a className="btn" onClick={() => downloadFile(p)}>Download</a>
+                  </div>
                 ))
               }
             </div>
