@@ -358,7 +358,8 @@ class ProfileCard extends Component {
   /**
    * upload photo
    */
-  onAddBadge() {
+  onAddBadge(e) {
+    e.preventDefault();
     const { badgeSelected } = this.state;
     const selectBadges = [];
     _.each(badgeSelected, (v, k) => {
