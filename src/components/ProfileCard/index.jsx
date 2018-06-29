@@ -220,9 +220,9 @@ class ProfileCard extends Component {
     }
     
     if (isValid) {
-      this.props.onAddNOK(this.state.files, nokFullName.value, nokEmail.value, () => {
-        nokFullName.value = '';
-        nokEmail.value = '';
+      this.props.onAddNOK(this.state.files, nokFullName, nokEmail, () => {
+        nokFullName = '';
+        nokEmail = '';
         this.hideAllPopup();
       });
     }
