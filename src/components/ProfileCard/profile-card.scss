@@ -688,6 +688,9 @@
             &.btn-md{
               width: 163px;
             }
+            &.btn-disabled{
+              opacity: 0.5;
+            }
           }
         }
 

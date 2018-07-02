@@ -21,6 +21,9 @@ class ProfileCard extends Component {
     this.toggleBadgeSelect = this.toggleBadgeSelect.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
     this.resetPopup = this.resetPopup.bind(this);
+    this.disableSubmitOnPostForms = this.disableSubmitOnPostForms.bind(this);
+    this.enableSubmitOnPostForms = this.enableSubmitOnPostForms.bind(this);
+    this.buttonDisabledClass = this.buttonDisabledClass.bind(this);
     this.onAddEvent = this.onAddEvent.bind(this);
     this.onAddStory = this.onAddStory.bind(this);
     this.onAddTestimonial = this.onAddTestimonial.bind(this);
@@ -57,6 +60,11 @@ class ProfileCard extends Component {
       flagEntityType: '',
       flagEntityId: '',
       activeFlagId: 1,
+
+      // UI state for the four types of posts (Story, UploadPhoto, Testimonial, Badge)
+      posts: {
+        submitDisabled: false
+      },
     };
   }
 
@@ -141,7 +149,7 @@ class ProfileCard extends Component {
     newState.popupActive = '';
     this.setState(newState);
     document.querySelector('body').classList.remove('has-popup');
-    
+    this.enableSubmitOnPostForms();
     this.resetPopup();
   }
   
@@ -227,7 +235,21 @@ class ProfileCard extends Component {
       });
     }
   }
-  
+
+  disableSubmitOnPostForms() {
+    this.setState({ posts: { submitDisabled: true } });
+  }
+
+  enableSubmitOnPostForms() {
+    this.setState({ posts: { submitDisabled: false } });
+  }
+
+  buttonDisabledClass() {
+    if (this.state.posts.submitDisabled) {
+      return ' btn-disabled';
+    }
+  }
+
   onAddEvent() {
     let { eventYear, eventMonth, eventDay, eventSelected } = this.state;
     eventMonth = _.toNumber(eventMonth);
@@ -244,12 +266,17 @@ class ProfileCard extends Component {
 
     const dateString = `${eventYear}-${eventMonth}-${eventDay}`;
 
-    this.props.onAddEvent({ eventDate: dateString, eventTypeId: eventSelected }, () => {
+    const onSuccess = () => {
       this.setState({
         eventYear: '', eventMonth: '', eventDay: '', eventSelected: 0
       });
       this.hideAllPopup();
-    })
+    };
+
+    this.disableSubmitOnPostForms();
+    this.props.onAddEvent({ eventDate: dateString, eventTypeId: eventSelected },
+                          onSuccess,
+                          this.enableSubmitOnPostForms);
   }
 
   isAddEventDateValid(year, month, day) {
@@ -281,7 +308,8 @@ class ProfileCard extends Component {
   /**
    * add testimonial
    */
-  onAddTestimonial() {
+  onAddTestimonial(e) {
+    e.preventDefault();
     const { testimonialTitle, testimonialContent } = this.state;
     if (_.isEmpty(testimonialTitle)) {
       return CommonService.showError("Title should not empty");
@@ -289,18 +317,25 @@ class ProfileCard extends Component {
     if (_.isEmpty(testimonialContent)) {
       return CommonService.showError("Content should not empty");
     }
-    this.props.onAddTestimonial({ title: testimonialTitle, text: testimonialContent }, () => {
+
+    const onSuccess = () => {
       this.setState({
         testimonialTitle: '', testimonialContent: '',
       });
       this.hideAllPopup();
-    });
+    };
+
+    this.disableSubmitOnPostForms();
+    this.props.onAddTestimonial({ title: testimonialTitle, text: testimonialContent },
+                                onSuccess,
+                                this.enableSubmitOnPostForms);
   }
-  
+
   /**
    * upload photo
    */
-  onUploadPhoto() {
+  onUploadPhoto(e) {
+    e.preventDefault();
     const title = this.refs.photoCaption.value;
     const files = this.state.files;
 
@@ -310,17 +345,21 @@ class ProfileCard extends Component {
     if (_.isEmpty(title) || ProfileCard.containsOnlyWhitespace(title)) {
       return CommonService.showError("Photo caption should not be empty.");
     }
-    
-    this.props.onUploadPhoto(files, title, () => {
+
+    const onSuccess = () => {
       this.resetPopup();
       this.hideAllPopup();
-    });
+    };
+
+    this.disableSubmitOnPostForms();
+    this.props.onUploadPhoto(files, title, onSuccess, this.enableSubmitOnPostForms);
   }
   
   /**
    * upload photo
    */
-  onAddBadge() {
+  onAddBadge(e) {
+    e.preventDefault();
     const { badgeSelected } = this.state;
     const selectBadges = [];
     _.each(badgeSelected, (v, k) => {
@@ -329,19 +368,23 @@ class ProfileCard extends Component {
     if (selectBadges.length <= 0) {
       return CommonService.showError("You must at least select one badge.");
     }
-    
-    this.props.onAddBadge(selectBadges, () => {
+
+    const onSuccess = () => {
       this.setState({
         badgeSelected: {},
       });
       this.hideAllPopup();
-    });
+    };
+
+    this.disableSubmitOnPostForms();
+    this.props.onAddBadge(selectBadges, onSuccess, this.enableSubmitOnPostForms);
   }
-  
+
   /**
    * add story
    */
-  onAddStory() {
+  onAddStory(e) {
+    e.preventDefault();
     const { storyTitle, storyContent } = this.state;
     if (_.isEmpty(storyTitle)) {
       return CommonService.showError("Title should not be empty.");
@@ -349,12 +392,18 @@ class ProfileCard extends Component {
     if (_.isEmpty(storyContent)) {
       return CommonService.showError("Message should not be empty.");
     }
-    this.props.onAddStory({ title: storyTitle, text: storyContent }, () => {
+
+    const onSuccess = () => {
       this.setState({
         storyTitle: '', storyContent: '',
       });
       this.showPopup('isThanksPop')();
-    });
+    };
+
+    this.disableSubmitOnPostForms();
+    this.props.onAddStory({ title: storyTitle, text: storyContent },
+                          onSuccess,
+                          this.enableSubmitOnPostForms);
   }
   
   onAddFlag() {
@@ -386,7 +435,7 @@ class ProfileCard extends Component {
               <div className="col">
                 <div className="lead-msg">
                   <i className="ico-flower"></i>
-                  
+
                   <h5>{$p.msgTitle}</h5>
                   <div className="desc">
                     Share a message, photo, or memory of {$p.profileName}. You can also research historical information (if applicable) and award a badge of honor. <a>Read more</a>
@@ -407,7 +456,7 @@ class ProfileCard extends Component {
             </div>
           </div>
         </div>
-        
+
         <div className="profile-details-wrap">
           <div className="viewport">
             <div className="profile-details">
@@ -434,9 +483,9 @@ class ProfileCard extends Component {
                     >Send NOK Request</a>
                   </div>
                 </div>
-              
+
               </div>
-              
+
               <div className="profile-more-details">
                 <div className="fieldset">
                   <h6>Buried At</h6>
@@ -464,11 +513,11 @@ class ProfileCard extends Component {
                 </div>
               </div>
             </div>
-            
+
             <div className={"timeline-popup " + (this.state.isTimelineEvents ? 'on' : '')}
                  ref={node => { this.node = node; }}
             >
-              
+
               <h2>{$p.profileName}</h2>
               <span className="pa"></span>
               <div className="tagline">Timeline Event</div>
@@ -486,11 +535,11 @@ class ProfileCard extends Component {
                     !!$p.timelineEvents && $p.timelineEvents.map((item, i) => {
                       return (
                         <tr key={i}>
-                          <td>{moment(item[ 'eventDate' ]).format('Do MMM YYYY')}</td>
-                          <td><span className={item[ 'eventType' ][ 'iconURL' ].toLowerCase()}>
-                            {item[ 'eventType' ][ 'name' ]}</span></td>
+                          <td>{moment(item['eventDate']).format('Do MMM YYYY')}</td>
+                          <td><span className={item['eventType']['iconURL'].toLowerCase()}>
+                            {item['eventType']['name']}</span></td>
                         </tr>
-                      )
+                      );
                     })
                   }
                   </tbody>
@@ -501,11 +550,11 @@ class ProfileCard extends Component {
                   ><span className="ico">Event</span> </a>
                 </div>
               </div>
-            
+
             </div>
           </div>
         </div>
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isWritePop' ? 'on' : '')}
              onClick={this.hideAllPopup}>
           <div className="popup"
@@ -515,7 +564,7 @@ class ProfileCard extends Component {
             <a className="close"
                onClick={this.hideAllPopup}
             > </a>
-            <form className="frm">
+            <form className="frm" onSubmit={this.onAddStory}>
               <div className="fieldset">
                 <h6>Title</h6>
                 <div className="val">
@@ -544,15 +593,16 @@ class ProfileCard extends Component {
                 <a className="btn btn-clear"
                    onClick={this.hideAllPopup}
                 >Cancel</a>
-                <a className="btn"
-                   onClick={this.onAddStory}
-                >Post Story</a>
+                <input className={"btn " + this.buttonDisabledClass()}
+                       type="submit"
+                       disabled={this.state.posts.submitDisabled}
+                       value="Post Story"
+                />
               </div>
             </form>
           </div>
         </div>
-        
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isFlagginPopup' ? 'on' : '')}
              onClick={this.hideAllPopup}>
           <div className="popup"
@@ -570,11 +620,13 @@ class ProfileCard extends Component {
                     >
                       <a className={"radioctrl "
                       + (this.state.activeFlagId === item.id ? 'checked' : '')}
-                         onClick={() => { this.setState({ activeFlagId: item.id }) }}
+                         onClick={() => {
+                           this.setState({ activeFlagId: item.id });
+                         }}
                       >{item.reason}</a>
                       <div className="details hide-md">{item.details}</div>
                     </div>
-                  )
+                  );
                 })
               }
               <div className="disclosure">Flagged content may in violation of the Veterans Legacy Memorial User
@@ -591,8 +643,8 @@ class ProfileCard extends Component {
             </form>
           </div>
         </div>
-        
-        
+
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isUploadPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
@@ -603,13 +655,13 @@ class ProfileCard extends Component {
             <a className="close"
                onClick={this.hideAllPopup}
             > </a>
-            <form className="frm">
+            <form className="frm" onSubmit={this.onUploadPhoto}>
               <div className="fieldset">
                 <h6>Photo Caption</h6>
                 <div className="val">
                   <input type="text"
                          className="textctrl"
-                         ref="photoCaption"/>
+                         ref="photoCaption" />
                 </div>
               </div>
               <div className="fieldset">
@@ -627,8 +679,8 @@ class ProfileCard extends Component {
                         }
                       </div>
                       <div className="drop-con show-md">Open phone album</div>
-                    
-                    
+
+
                     </Dropzone>
                   </div>
                 </div>
@@ -637,14 +689,16 @@ class ProfileCard extends Component {
                 <a className="btn btn-clear"
                    onClick={this.hideAllPopup}
                 >Cancel</a>
-                <a className="btn"
-                   onClick={this.onUploadPhoto}
-                >Upload Photo</a>
+                <input className={"btn " + this.buttonDisabledClass()}
+                       type="submit"
+                       disabled={this.state.posts.submitDisabled}
+                       value="Upload Photo"
+                />
               </div>
             </form>
           </div>
         </div>
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isEventPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
@@ -664,31 +718,31 @@ class ProfileCard extends Component {
                            min={1}
                            max={12}
                            onChange={event => this.setState({ eventMonth: event.target.value })}
-                           className="textctrl"/>
+                           className="textctrl" />
                   </div>
                 </div>
-                
+
                 <div className="field-gr dd">
                   <h6>Day</h6>
                   <div className="val">
                     <input type="number" value={this.state.eventDay}
                            min={1}
                            max={31}
-                           onChange={event => this.setState({ eventDay: event.target.value })} className="textctrl"/>
+                           onChange={event => this.setState({ eventDay: event.target.value })} className="textctrl" />
                   </div>
                 </div>
-                
+
                 <div className="field-gr yy">
                   <h6>Year</h6>
                   <div className="val">
                     <input type="number" value={this.state.eventYear}
                            min={1000}
                            max={3000}
-                           onChange={event => this.setState({ eventYear: event.target.value })} className="textctrl"/>
+                           onChange={event => this.setState({ eventYear: event.target.value })} className="textctrl" />
                   </div>
                 </div>
               </div>
-              
+
               <div className="fieldset">
                 <h6>Event</h6>
                 <div className="val">
@@ -712,7 +766,7 @@ class ProfileCard extends Component {
             </form>
           </div>
         </div>
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isTestimonialPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
@@ -723,14 +777,14 @@ class ProfileCard extends Component {
             <a className="close"
                onClick={this.hideAllPopup}
             > </a>
-            <form className="frm">
+            <form className="frm" onSubmit={this.onAddTestimonial}>
               <div className="fieldset">
                 <h6>Title</h6>
                 <div className="val">
                   <input type="text"
                          value={this.state.testimonialTitle}
                          onChange={event => this.setState({ testimonialTitle: event.target.value })}
-                         className="textctrl"/>
+                         className="textctrl" />
                 </div>
               </div>
               <div className="fieldset">
@@ -746,14 +800,16 @@ class ProfileCard extends Component {
                 <a className="btn btn-clear"
                    onClick={this.hideAllPopup}
                 >Cancel</a>
-                <a className="btn btn-md"
-                   onClick={this.onAddTestimonial}
-                >Post Testimonial</a>
+                <input className={"btn btn-md " + this.buttonDisabledClass()}
+                       type="submit"
+                       disabled={this.state.posts.submitDisabled}
+                       value="Post Testimonial"
+                />
               </div>
             </form>
           </div>
         </div>
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isBadgePop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
@@ -764,7 +820,7 @@ class ProfileCard extends Component {
             <a className="close"
                onClick={this.hideAllPopup}
             > </a>
-            <form className="frm frm-badge">
+            <form className="frm frm-badge" onSubmit={this.onAddBadge}>
               <div className="fieldset">
                 <h6>Select Badge</h6>
                 <div className="val">
@@ -774,32 +830,38 @@ class ProfileCard extends Component {
                         {!!$p.badges && $p.badges.map((item, i) => {
                           return (
                             <a key={i}
-                               className={"badge-el " + item[ 'iconURL' ] + (!!this.state.badgeSelected[ item.id ] ? ' on' : '')}
-                               onClick={() => {this.toggleBadgeSelect(item.id)}}
+                               className={"badge-el " + item['iconURL'] + (!!this.state.badgeSelected[item.id] ? ' on' : '')}
+                               onClick={() => {
+                                 this.toggleBadgeSelect(item.id);
+                               }}
                             >{item.name}</a>
-                          )
+                          );
                         })}
                       </div>
                     </Scrollbars>
                   </div>
                 </div>
               </div>
-              
+
               <div className="actions fx">
                 <a className="btn btn-clear"
                    onClick={this.hideAllPopup}
                 >Cancel</a>
-                <a className="btn"
-                   onClick={this.onAddBadge}
-                >Add Badge</a>
+                <input className="btn"
+                       type="submit"
+                       disabled={this.state.posts.submitDisabled}
+                       value="Add Badge"
+                />
               </div>
             </form>
           </div>
         </div>
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isNokPopup' ? 'on' : '')}
              onClick={this.hideAllPopup}
-             ref={node => { this.nodeStory = node; }}>
+             ref={node => {
+               this.nodeStory = node;
+             }}>
           <div className="popup"
                onClick={this.stopPropagation}
           >
@@ -842,20 +904,20 @@ class ProfileCard extends Component {
                           ? this.state.files.map(f => <span key={f.name} className="filename">{f.name}</span>)
                           : 'Upload file(s)'
                       }</span>
-                      
+
                       <a className="btn btn-browse">Browse</a>
                     </div>
-                  
+
                   </Dropzone>
-                
+
                 </div>
               </div>
-              
+
               <div className="banner-accepted">
                 <h4>Accepted Proof</h4>
                 <div className="info">{$p.acceptedProof}</div>
               </div>
-              
+
               <div className="actions fx">
                 <a className="btn btn-clear"
                    onClick={this.hideAllPopup}
@@ -867,10 +929,12 @@ class ProfileCard extends Component {
             </form>
           </div>
         </div>
-        
+
         <div className={"popup-wrap " + (this.state.popupActive === 'isThanksPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
-             ref={node => { this.nodeStory = node; }}>
+             ref={node => {
+               this.nodeStory = node;
+             }}>
           <div className="popup popup-thanks"
                onClick={this.stopPropagation}
           >
@@ -886,8 +950,8 @@ class ProfileCard extends Component {
           </div>
         </div>
       </div>
-    
-    )
+
+    );
   }
 }
 
