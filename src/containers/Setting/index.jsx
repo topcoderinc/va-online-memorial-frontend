@@ -161,7 +161,7 @@ class Setting extends Component {
    * download file
    */
   downloadFile(file) {
-    this.props.dataAction.downloadFile(file);
+    this.props.dataAction.downloadFile(file)
   }
 
   /**

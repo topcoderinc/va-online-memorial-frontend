@@ -301,6 +301,7 @@
   right: 0;
   top: 80px;
   display: none;
+  overflow: auto;
 
   @media(min-width: 1380px) {
     right: 50px;
@@ -325,7 +326,7 @@
       content: '';
       position: absolute;
       bottom: -13px;
-      left: 0px;
+      left: 0;
       height: 25px;
       width: 25px;
       background-color: #ffffff;
@@ -687,6 +688,9 @@
             }
             &.btn-md{
               width: 163px;
+            }
+            &.btn-disabled{
+              opacity: 0.5;
             }
           }
         }
