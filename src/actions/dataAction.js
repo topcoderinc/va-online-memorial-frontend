@@ -435,10 +435,14 @@ function deletePost(type, id) {
  */
 function downloadFile(file) {
   return function () {
-    API.downloadFile(file.fileURL).then(res => {
-      const blob = new Blob([ res.response ], { type: file.mimeType });
-      fileSaver.saveAs(blob, (file.name));
-    });
+    API.downloadFile(file.fileURL)
+      .then(res => {
+        const blob = new Blob([ res.response ], { type: file.mimeType });
+        fileSaver.saveAs(blob, (file.name));
+      })
+      .catch(err => {
+        toast(err.message, { type: 'error' });
+      });
   }
 }
 
