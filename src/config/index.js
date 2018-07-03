@@ -10,8 +10,8 @@
  * variable, which is commented out below, does not work at Heroku. Most
  * probably, there is something wrong with configuration of the build
  * procedure. */
-// export const API_URL = 'https://rest-api.app.cloud.gov/api';
-export const API_URL = 'http://localhost:4000/api';
+ export const API_URL = 'https://rest-api.app.cloud.gov/api';
+//export const API_URL = 'http://localhost:4000/api';
 
 /*
 'http://localhost:4000/api'
