@@ -3,6 +3,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import dataAction from '../../actions/dataAction';
 import actions from '../../actions/auth';
+import uiActions from '../../actions/ui';
 import MainHeaderComponent from '../../components/MainHeader';
 import MainFooter from '../../components/MainFooter';
 import ProfileCard from '../../components/ProfileCard';
@@ -123,71 +124,91 @@ class Search extends Component {
   /**
    * add event to veteran
    * @param event the event entity
-   * @param cb the success callback
+   * @param successCallback the success callback
+   * @param failureCallback the failure callback
    */
-  onAddEvent(event, cb) {
+  onAddEvent(event, successCallback, failureCallback) {
     APIService.createEvent(_.extend({}, event, { veteranId: this.profileId, status: "Requested" }))
       .then(rsp => {
-        cb(rsp);
-        CommonService.showSuccess("Event has been created, please wait admin approve.");
-      }).catch(err => CommonService.showError(err));
+        successCallback(rsp);
+        CommonService.showSuccess("Event has been created, please wait for admin approval.");
+      }).catch(err => {
+        failureCallback(err);
+        CommonService.showError(err)
+      });
   }
 
   /**
    * add testimonial
    * @param entity the testimonial entity
-   * @param cb the success callback
+   * @param successCallback the success callback
+   * @param failureCallback the failure callback
    */
-  onAddTestimonial(entity, cb) {
+  onAddTestimonial(entity, successCallback, failureCallback) {
     APIService.createTestimonial(_.extend({}, entity, { veteranId: this.profileId, status: "Requested" }))
       .then(rsp => {
-        cb(rsp);
-        CommonService.showSuccess("Testimonial has been created, please wait admin approve.");
-      }).catch(err => CommonService.showError(err));
+        successCallback(rsp);
+        CommonService.showSuccess("Testimonial has been created, please wait for admin approval.");
+      }).catch(err => {
+        failureCallback(err);
+        CommonService.showError(err);
+      });
   }
 
   /**
    * upload photos
    * @param files the files
    * @param title the photo title
-   * @param cb the success callback
+   * @param successCallback the success callback
+   * @param failureCallback the failure callback
    */
-  onUploadPhoto(files, title, cb) {
-    APIService.uploadPhoto(files[ 0 ], title, this.profileId).then(() => {
-      cb();
-      CommonService.showSuccess("Photo has been uploaded, please wait admin approve.");
-    }).catch(err => CommonService.showError(err));
+  onUploadPhoto(files, title, successCallback, failureCallback) {
+    APIService.uploadPhoto(files[ 0 ], title, this.profileId).then((rsp) => {
+      successCallback(rsp);
+      CommonService.showSuccess("Photo has been uploaded, please wait for admin approval.");
+    }).catch(err => {
+      failureCallback(err);
+      CommonService.showError(err)
+    });
   }
 
   /**
    * add badges
    * @param badgeIds the badge id
-   * @param cb the success callback
+   * @param successCallback the success callback
+   * @param failureCallback the failure callback
    */
-  onAddBadge(badgeIds, cb) {
+  onAddBadge(badgeIds, successCallback, failureCallback) {
     const promises = badgeIds.map(id => APIService.createBadge({
       veteranId: this.profileId,
       status: "Requested",
       badgeTypeId: id
     }));
 
-    Promise.all(promises).then(() => {
-      cb();
-      CommonService.showSuccess(badgeIds.length + " Badges has been created, please wait admin approve.");
-    }).catch(err => CommonService.showError(err));
+    Promise.all(promises).then((rsp) => {
+      successCallback(rsp);
+      CommonService.showSuccess(badgeIds.length + " Badges has been created, please wait for admin approval.");
+    }).catch(err => {
+      failureCallback(err);
+      CommonService.showError(err)
+    });
   }
 
   /**
    * add story
    * @param entity the story entity
-   * @param cb the success callback
+   * @param successCallback the success callback
+   * @param failureCallback the failure callback
    */
-  onAddStory(entity, cb) {
+  onAddStory(entity, successCallback, failureCallback) {
     APIService.createStory(_.extend({}, entity, { veteranId: this.profileId, "status": "Requested" }))
       .then(rsp => {
-        cb(rsp);
-        CommonService.showSuccess("Story has been created, please wait admin approve.");
-      }).catch(err => CommonService.showError(err));
+        successCallback(rsp);
+        CommonService.showSuccess("Story has been created, please wait for admin approval.");
+      }).catch(err => {
+        failureCallback(err);
+        CommonService.showError(err)
+      });
   }
 
   /**
@@ -201,7 +222,7 @@ class Search extends Component {
     APIService.createNextOfKin(files, AuthService.getCurrentUser().id, this.profileId, fullName, email)
       .then(() => {
         cb();
-        CommonService.showSuccess("NextOfKin has been created, please wait admin approve.");
+        CommonService.showSuccess("NextOfKin has been created, please wait for admin approval.");
       }).catch(err => CommonService.showError(err));
   }
 
@@ -214,7 +235,7 @@ class Search extends Component {
     APIService.createFlag(entity)
       .then(() => {
         cb();
-        CommonService.showSuccess(`Flag for ${entity.postType} has been created, please wait admin approve.`);
+        CommonService.showSuccess(`Flag for ${entity.postType} has been created, please wait for admin approval.`);
       }).catch(err => CommonService.showError(err));
   }
 
@@ -389,14 +410,16 @@ class Search extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ...state.dataReducer
+    ...state.dataReducer,
+    ui: state.ui
   }
 };
 
 const matchDispatchToProps = (dispatch) => {
   return {
     actions: bindActionCreators({ ...actions }, dispatch),
-    dataAction: bindActionCreators({ ...dataAction }, dispatch)
+    dataAction: bindActionCreators({ ...dataAction }, dispatch),
+    ui: bindActionCreators({ ...uiActions }, dispatch)
   }
 };
 

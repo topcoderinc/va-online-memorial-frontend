@@ -120,7 +120,7 @@ function getData() {
 function searchVeterans(query) {
   console.log(query);
   return function (dispatch) {
-    API.searchVeterans(cloneDeep(query)).then(data => {
+    return API.searchVeterans(cloneDeep(query)).then(data => {
       dispatch(loadVeterans(data));
       console.log(query);
       dispatch(updateFilters({ ...query, offset: data.offset, limit: data.limit }));
@@ -435,11 +435,14 @@ function deletePost(type, id) {
  */
 function downloadFile(file) {
   return function () {
-    API.downloadFile(file.fileURL).then(res => {
-      const blob = new Blob([ res.response ], { type: file.mimeType });
-      fileSaver.saveAs(blob, (file.name));
-      toast('file download success', { type: 'info' });
-    });
+    API.downloadFile(file.fileURL)
+      .then(res => {
+        const blob = new Blob([ res.response ], { type: file.mimeType });
+        fileSaver.saveAs(blob, (file.name));
+      })
+      .catch(err => {
+        toast(err.message, { type: 'error' });
+      });
   }
 }
 

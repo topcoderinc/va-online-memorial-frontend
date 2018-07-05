@@ -140,11 +140,13 @@ class SettingRequest extends React.Component{
                   <div className="submitted-proof">
                     <div className="proof-head">
                       <span>Submitted Proof</span>
-                      <a className="btn">Download</a>
                     </div>
                     {
                       get(s, 'proofs', []).map((p, j)=>(
-                        <div key={j} className="proof-item"><a onClick={() => this.downloadFile(p)}>{p.name}</a></div>
+                        <div key={j} className="proof-item">
+                          <a onClick={() => this.downloadFile(p)}>{p.name}</a>
+                          <a className="btn" onClick={() => this.downloadFile(p)}>Download</a>
+                        </div>
                       ))
                     }
                   </div>

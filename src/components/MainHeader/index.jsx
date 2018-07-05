@@ -9,13 +9,10 @@ import CommonService from "../../services/common";
 import Spinner from '../Spinner';
 import dataAction from '../../actions/dataAction';
 import authAction from '../../actions/auth';
+import uiAction from '../../actions/ui';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {extend, map, isEmpty} from 'lodash';
-
-const mapStateToProps = (state) => {
-  return extend({}, state.dataReducer);
-};
+import {debounce, extend, map, isEmpty} from 'lodash';
 
 class Masterhead extends Component {
   constructor(props) {
@@ -31,11 +28,11 @@ class Masterhead extends Component {
     this.showSearchPopup = this.showSearchPopup.bind(this);
     this.hideSearchPopup = this.hideSearchPopup.bind(this);
     this.stopPropagation = this.stopPropagation.bind(this);
+    this.searchRequest = debounce(this.searchRequest, 500);
 
     this.state = {
-      isLoginActive: false,
-      isRegisterActive: false,
       keyword: '',
+      keywordForResults: '',
       isSearchFocused: false,
       logger: {},
       error: {},
@@ -47,12 +44,12 @@ class Masterhead extends Component {
       branchId: props.filters.branchIds || '0',
       squadronShip: props.filters.squadronShip || '',
       cemeteryId: props.filters.cemeteryId || '0',
-      birthDateYear: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getFullYear() + '' : '',
-      birthDateMonth: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getMonth() + 1 + '' : '',
-      birthDateDay: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getDay() + '' : '',
-      deathDateYear: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getFullYear() + '' : '',
-      deathDateMonth: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getMonth() + 1 + '' : '',
-      deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getDay() + '' : '',
+      birthDateYear: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCFullYear() + '' : '',
+      birthDateMonth: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCMonth() + 1 + '' : '',
+      birthDateDay: props.filters.birthDateStart ? new Date(props.filters.birthDateStart).getUTCDate() + '' : '',
+      deathDateYear: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCFullYear() + '' : '',
+      deathDateMonth: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCMonth() + 1 + '' : '',
+      deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCDate() + '' : '',
       served: props.filters.served || '',
       division: props.filters.division || '',
     };
@@ -80,7 +77,7 @@ class Masterhead extends Component {
     this.props.dataAction.getAllBranches();
     this.props.dataAction.getAllCemeteries();
     window.showLoginDialog = () => {
-      this.setState({ isLoginActive: true, isRegisterActive: false });
+      this.props.uiAction.showLoginPopup();
     }
   }
 
@@ -92,19 +89,19 @@ class Masterhead extends Component {
         served: nextProps.filters.served || '',
         division: nextProps.filters.division || '',
         cemeteryId: nextProps.filters.cemeteryId || '0',
-        birthDateYear: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getFullYear() + '' : '',
-        birthDateMonth: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getMonth() + 1 + '' : '',
-        birthDateDay: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getDate() + '' : '',
-        deathDateYear: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getFullYear() + '' : '',
-        deathDateMonth: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getMonth() + 1 + '' : '',
-        deathDateDay: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getDate() + '' : '',
+        birthDateYear: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCFullYear() + '' : '',
+        birthDateMonth: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCMonth() + 1 + '' : '',
+        birthDateDay: nextProps.filters.birthDateStart ? new Date(nextProps.filters.birthDateStart).getUTCDate() + '' : '',
+        deathDateYear: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCFullYear() + '' : '',
+        deathDateMonth: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCMonth() + 1 + '' : '',
+        deathDateDay: nextProps.filters.deathDateStart ? new Date(nextProps.filters.deathDateStart).getUTCDate() + '' : '',
       });
     }
   }
 
   zeroFill(s) {
     if (s.length === 1) {
-      return 0 + s;
+      return '0' + s;
     }
     return s;
   }
@@ -138,7 +135,20 @@ class Masterhead extends Component {
     const state = this.state;
     state[ key ] = value;
     state[ 'offset' ] = 0;
-    this.setState(state, () => this.props.dataAction.searchVeterans(this.makeFilters()));
+    this.setState(state);
+    this.searchRequest();
+  }
+
+  searchRequest() {
+    if (this.currentSearch) {
+      this.currentSearch.cancel();
+    }
+
+    this.currentSearch = this.props.dataAction.searchVeterans(this.makeFilters()).then(() => {
+      const newState = this.state;
+      newState.keywordForResults = this.state.keyword;
+      this.setState(newState);
+    });
   }
 
   handleBirthDateChange(key, value) {
@@ -203,8 +213,8 @@ class Masterhead extends Component {
         this.setState({
           logger: user,
           showSpinner: false,
-          'isLoginActive': false
         });
+        this.props.uiAction.hideLoginPopup();
         this.props.authAction.login(user);
       }).catch(err => {
         error.user = true;
@@ -282,12 +292,12 @@ class Masterhead extends Component {
         CommonService.showSuccess(`User with email ${user.email} register successful.`);
         this.setState({
           showSpinner: false,
-          'isRegisterActive': false
         });
+        this.props.uiAction.hideRegisterPopup();
       }).catch(err => {
         this.setState({
+          showSpinner: false,
           regerror: {
-            showSpinner: false,
             registerEmail: true,
             registerUser: true,
           }
@@ -315,16 +325,14 @@ class Masterhead extends Component {
 
   //show searchpop
   showSearchPopup() {
-    this.setState({ 'isLoginActive': false });
-    this.setState({ 'isRegisterActive': false });
-    this.setState({ 'isSearchFocused': true });
+    this.props.uiAction.showSearchModal();
 
     document.addEventListener('click', this.handleOutsideClickHandler(this));
   }
 
   //hides searchpop
   hideSearchPopup() {
-    this.setState({ 'isSearchFocused': false });
+    this.props.uiAction.hideSearchModal();
     if (document.querySelector('.search-modal')) {
       document.querySelector('.search-modal').removeEventListener('click', this.handleOutsideClick);
     }
@@ -344,7 +352,7 @@ class Masterhead extends Component {
 
   render() {
     const { notifications, addClass, userName } = this.props.attr;
-    const { veterans, branches, cemeteries, nokRequests } = this.props;
+    const { veterans, branches, cemeteries, nokRequests, ui, uiAction } = this.props;
     const nok = this.state.logger.role !== 'admin' && CommonService.isNok(nokRequests);
     const notiPopup = notifications && notifications.length > 0 &&
       (
@@ -392,10 +400,10 @@ class Masterhead extends Component {
               ? (
                 <div className="actions">
                   <a className="btn btn-primary"
-                     onClick={this.$s({ 'isLoginActive': true, 'isRegisterActive': false })}
+                     onClick={uiAction.showLoginPopup}
                   >Login</a>
                   <a className="btn btn-clear"
-                     onClick={this.$s({ 'isRegisterActive': true, 'isLoginActive': false })}
+                     onClick={uiAction.showRegisterPopup}
                   >Register</a>
                 </div>
               )
@@ -438,10 +446,10 @@ class Masterhead extends Component {
             </div>
           }
 
-          <div className={(this.state.isLoginActive ? 'open' : '') + ' header-card login-card '}>
+          <div className={(ui.isLoginActive ? 'open' : '') + ' header-card login-card '}>
             <h2>Login Account</h2>
             <a className="close"
-               onClick={this.$s({ 'isLoginActive': false })}
+               onClick={uiAction.hideLoginPopup}
             > </a>
 
             <div className="fieldset">
@@ -472,10 +480,10 @@ class Masterhead extends Component {
             </div>
           </div>
 
-          <div className={(this.state.isRegisterActive ? 'open' : '') + ' header-card register-card '}>
+          <div className={(ui.isRegisterActive ? 'open' : '') + ' header-card register-card '}>
             <h2>Create Account</h2>
             <a className="close"
-               onClick={this.$s({ 'isRegisterActive': false })}
+               onClick={uiAction.hideRegisterPopup}
             > </a>
 
             <form className="frm">
@@ -486,6 +494,8 @@ class Masterhead extends Component {
                     <input type="email"
                            className={"textctrl " + (!!this.state.regerror.registerEmail ? 'error' : '')}
                            ref="registerEmail"
+                           value={ui.registrationFormEmail}
+                           onChange={(event) => uiAction.registrationFormSetEmail(event.target.value)}
                     />
                   </div>
                 </div>
@@ -531,7 +541,7 @@ class Masterhead extends Component {
             </div>
           </div>
 
-          <div className={"search-modal " + (!!this.state.isSearchFocused ? 'on' : '')}
+          <div className={"search-modal " + (ui.showSearchModal ? 'on' : '')}
                onClick={this.hideSearchPopup}
           >
             <Scrollbars className="custom-scrollar scrollbar-md"
@@ -580,7 +590,7 @@ class Masterhead extends Component {
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Date of Death' }}>
+                  <Toggler attr={{ title: 'Date of Passing' }}>
                     <div className="toggler-con fx fields-3">
                       <div className="gr gr-1">
                         <h6>Month</h6>
@@ -641,7 +651,7 @@ class Masterhead extends Component {
                   {veterans.items && veterans.items.length > 0
                     ? (<div>
                         <h3><span className="count"> {veterans.total} </span> Results for <span
-                          className='keyword'>“{this.state.keyword}”</span></h3>
+                          className='keyword'>“{this.state.keywordForResults}”</span></h3>
                         <SearchTable attr={{
                           keyword: this.state.keyword, searchedResults: veterans.items,
                           limit: this.props.filters.limit || 10,
@@ -663,10 +673,18 @@ class Masterhead extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    ...state.dataReducer,
+    ui: state.ui
+  }
+};
+
 const matchDispatchToProps = (dispatch) => {
   return {
     dataAction: bindActionCreators(extend({}, dataAction), dispatch),
     authAction: bindActionCreators(extend({}, authAction), dispatch),
+    uiAction: bindActionCreators(extend({}, uiAction), dispatch)
   };
 };
 

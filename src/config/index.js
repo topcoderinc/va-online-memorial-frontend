@@ -10,7 +10,9 @@
  * variable, which is commented out below, does not work at Heroku. Most
  * probably, there is something wrong with configuration of the build
  * procedure. */
-export const API_URL = 'https://va-rest-api.herokuapp.com/api';
+ export const API_URL = 'https://rest-api.app.cloud.gov/api';
+//export const API_URL = 'http://localhost:4000/api';
+
 /*
 'http://localhost:4000/api'
   || process.env.REACT_APP_API_URL;

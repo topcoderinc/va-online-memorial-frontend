@@ -5,28 +5,22 @@ import Pagination from "react-js-pagination";
 import './styles.scss';
 import AuthService from "../../services/auth";
 import ProfilePicture from '../ProfilePicture';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import actions from '../../actions/auth';
+import dataAction from '../../actions/dataAction';
+import uiAction from '../../actions/ui';
 
 class SearchTable extends Component {
   constructor(props) {
     super(props);
     
-    this.toggle = this.toggle.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.state = {
-      toggleState: '',
       activePage: 1,
       itemsPerPage: props.attr.limit,
       redirectTo: null,
     };
-  }
-  
-  /**
-   * show or hide search table
-   */
-  toggle() {
-    this.setState({
-      'toggleState': this.state.toggleState === 'open' ? '' : 'open'
-    })
   }
   
   /**
@@ -60,6 +54,7 @@ class SearchTable extends Component {
    */
   onItemClick(link) {
     if (AuthService.getCurrentUser()) {
+      this.props.uiAction.hideSearchModal();
       this.setState({ redirectTo: link });
     } else {
       console.log(window.showLoginDialog)
@@ -98,7 +93,6 @@ class SearchTable extends Component {
                             />
                             <span dangerouslySetInnerHTML={{ __html: this.highlightText(keyword, item.name) }}/>
                           </a>
-                          <div className="txt view-md">{item.burriedAt}</div>
                         </div>
                       </td>
                       <td>{item.life}</td>
@@ -143,4 +137,19 @@ class SearchTable extends Component {
   }
 }
 
-export default SearchTable;
+const mapStateToProps = (state) => {
+  return {
+    ...state.dataReducer,
+    ui: state.ui
+  }
+};
+
+const matchDispatchToProps = (dispatch) => {
+  return {
+    actions: bindActionCreators({ ...actions }, dispatch),
+    dataAction: bindActionCreators({ ...dataAction }, dispatch),
+    uiAction: bindActionCreators({ ...uiAction }, dispatch)
+  }
+};
+
+export default connect(mapStateToProps, matchDispatchToProps)(SearchTable);

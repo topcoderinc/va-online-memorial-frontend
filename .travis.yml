@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+- 10.5
+deploy:
+  provider: cloudfoundry
+  api: https://api.fr.cloud.gov
+  username: e04fb32b-0d94-404c-a40b-e35949dba3a8
+  password:
+    secure: blZ5l9/K1lIkIiqxM3cQ2HX9y5VW6FhJlReM0v0ypVCh0Pvaf5rPOtQgnDcZbECHObGHBuGYDM3SIn7KSUK7+4aWOaTzes0hSBj7jWllOUG2o7+nrwcU7nbYYNWdMNIYkU5o64AXLXY+0rTntbk1jlKC4DijOay9eTJg4WJz2uEBUHbcVzJ/CUHWPZkNwg93po79TxnuPfggD/biPHD4GSUptN48rIPSHgtsF363yn9XapMOlsvm87Pclm4ihLyCSpdxgWenJ/U1aDAW4wZldBVQ/6kZ4RbDkfHLZQbWYEM64opCU/Ksb8q5Pd8TePx3uVV0gZQ8kRc1OVWuIMQ5v4Qofouu9MC4DnaetLGypEET+OVLSuB2x/RZnkCc5mRBe9vp8h6oCshvydJyT9nTCCISgAlDfEyZG+Vyw0VNiSF58ncmtcZbG9Qj0m03chMFiCN3LCa1t3hfMR2WCzqoeS4Ih/8rgLBoeyAEydJPtlTkhlLsRy9x8CObIdAK0f6KiM/9G273/x/N7zGGs3SCdsG5c2VYZDnesUHOOMev0rPQLAUFNcgD/5gr65CQqax166kTXXfBFoTgA8bHl9bUlM8GCDMhsdASMVcMmX0ceF9c5/nzIB1YoflAiVmb2OY9mfjGcmUsQ7Dhtlo3F5Aefe9dVdv6+BwypylcGSCRvxY=
+  organization: sandbox-va
+  space: frontend
+  on:
+    repo: topcoderinc/va-online-memorial-frontend
+    branch: prototype
