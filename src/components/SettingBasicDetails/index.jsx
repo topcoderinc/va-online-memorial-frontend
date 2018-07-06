@@ -1,15 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import CommonService from "../../services/common";
 import Toggler from '../Toggler';
 import './setting-basic-details.scss';
+import { extend } from 'lodash';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import authAction from '../../actions/auth';
 
 class SettingBasicDetails extends Component{
   constructor(props){
     super(props);
     this.state={
       details: props.details,
+      redirectTo: null,
     };
     this.updateBaseProfile = this.updateBaseProfile.bind(this);
     this.deactivateAccount = this.deactivateAccount.bind(this);
@@ -44,7 +48,9 @@ class SettingBasicDetails extends Component{
   }
 
   deactivateAccount() {
-    this.props.deactivate();
+    this.props.deactivate().then(() => {
+      this.props.authAction.logout();
+    });
   }
 
   render(){
@@ -136,4 +142,16 @@ SettingBasicDetails.props={
   }))
 };
 
-export default SettingBasicDetails;
+const mapStateToProps = (state) => {
+  return {
+    ui: state.ui
+  }
+};
+
+const matchDispatchToProps = (dispatch) => {
+  return {
+    authAction: bindActionCreators(extend({}, authAction), dispatch),
+  };
+};
+
+export default connect(mapStateToProps, matchDispatchToProps)(SettingBasicDetails);

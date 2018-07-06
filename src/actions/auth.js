@@ -61,16 +61,16 @@ function updateProfile(id, profile) {
   return function (dispatch) {
     API.updateProfile(id, profile).then(data => {
       dispatch(loadProfile(data));
-      toast('change saved success', { type: 'info' });
+      toast('Profile successfully updated.', { type: 'info' });
     });
   }
 }
 
 function deactivate() {
   return function (dispatch) {
-    API.deactivate().then(() => {
+    return API.deactivate().then(() => {
       dispatch(deactivateSuccess());
-      toast('deactivate success', { type: 'info' });
+      toast('Account was successfully deactivated.', { type: 'info' });
     });
   }
 }
