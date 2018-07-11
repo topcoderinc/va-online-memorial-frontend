@@ -12,7 +12,7 @@ import * as forms from '../../constants/forms';
 class ProfileCard extends Component {
   constructor(props) {
     super(props);
-    
+
     this.togglePopup = this.togglePopup.bind(this);
     this.handleOutsideClick = this.handleOutsideClick.bind(this);
     this.handleStoryContentInputChange = this.handleStoryContentInputChange.bind(this);
@@ -33,29 +33,29 @@ class ProfileCard extends Component {
       isTimelineEvents: false,
       activePop: '',
       popupActive: '',
-      
+
       nokError: {},
-      
+
       // add event values
       eventDay: '',
       eventMonth: '',
       eventYear: '',
       eventSelected: '',
-      
+
       // add story form values
       storyTitle: '',
       storyContent: '',
-      
+
       // add testimonial form values
       testimonialTitle: '',
       testimonialContent: '',
-      
+
       // add badge
       badgeSelected: {},
-      
+
       //upload photo or nok files
       files: [],
-      
+
       //flag values
       flagEntityType: '',
       flagEntityId: '',
@@ -88,27 +88,27 @@ class ProfileCard extends Component {
   componentWillUnmount() {
     delete window.showProfileFlagPopUp;
   }
-  
+
   // flie drop handler
   onDrop(files) {
     this.setState({
       files
     });
   }
-  
+
   //toggleBadgeSelect
   toggleBadgeSelect(index) {
     const badgeSelected = _.clone(this.state.badgeSelected);
     badgeSelected[ index ] = !badgeSelected[ index ];
     this.setState({ badgeSelected });
   }
-  
+
   handleOutsideClick(e) {
     // ignore clicks on the component itself
     if (this.node.contains(e.target)) {
       return;
     }
-    
+
     this.togglePopup(this.state.activePop)();
   }
 
@@ -118,7 +118,7 @@ class ProfileCard extends Component {
     }
     this.setState({ storyContent: event.target.value });
   }
-  
+
   // renderThumb
   renderThumb({ style, ...props }) {
     const thumbStyle = {
@@ -126,7 +126,7 @@ class ProfileCard extends Component {
       width: `6px`,
       borderRadius: `10px`
     };
-    
+
     return (
       <div
         style={{ ...style, ...thumbStyle }}
@@ -143,7 +143,7 @@ class ProfileCard extends Component {
     document.removeEventListener('click', this.handleOutsideClick, false);
     this.setState({ 'activePop': '' });
   }
-  
+
   hideAllPopup() {
     let newState = {};
     newState.popupActive = '';
@@ -152,16 +152,16 @@ class ProfileCard extends Component {
     this.enableSubmitOnPostForms();
     this.resetPopup();
   }
-  
+
   resetPopup() {
     this.refs.photoCaption.value = "";
     this.setState({ 'files': [] });
   }
-  
+
   stopPropagation(e) {
     e.stopPropagation();
   }
-  
+
   showPopup(popupName) {
     return (() => {
       this.hidePopup();
@@ -172,9 +172,9 @@ class ProfileCard extends Component {
       document.querySelector('body').classList.add('has-popup');
     })
   }
-  
+
   togglePopup(popName) {
-    
+
     return ((e) => {
       if (!this.state[ popName ]) {
         this.setState({ 'activePop': popName });
@@ -183,7 +183,7 @@ class ProfileCard extends Component {
         this.setState({ 'activePop': '' });
         document.removeEventListener('click', this.handleOutsideClick, false);
       }
-      
+
       this.setState(prevState => {
           let newState = {};
           newState[ popName ] = !prevState[ popName ];
@@ -191,7 +191,7 @@ class ProfileCard extends Component {
         }
       )
     })
-    
+
   }
 
   /**
@@ -215,18 +215,18 @@ class ProfileCard extends Component {
       error.nokEmail = true;
       isValid = false;
     }
-    
+
     this.setState({
       nokError: { ...error }
     });
-    
+
     if (error.nokEmail || error.nokFullName) {
       return;
     }
     if (this.state.files.length <= 0) {
       return CommonService.showError("You at least need choose one proof file.")
     }
-    
+
     if (isValid) {
       this.props.onAddNOK(this.state.files, nokFullName, nokEmail, () => {
         nokFullName = '';
@@ -304,19 +304,22 @@ class ProfileCard extends Component {
 
     return true;
   }
-  
+
   /**
    * add testimonial
    */
   onAddTestimonial(e) {
     e.preventDefault();
     const { testimonialTitle, testimonialContent } = this.state;
-    if (_.isEmpty(testimonialTitle)) {
-      return CommonService.showError("Title should not empty");
+    const testimonialTitleIsEmpty = _.isEmpty(testimonialTitle) || !testimonialTitle.trim().length;
+    const testimonialContentIsEmpty = _.isEmpty(testimonialContent) || !testimonialContent.trim().length;
+    if (testimonialTitleIsEmpty) {
+      CommonService.showError("Title should not empty");
     }
-    if (_.isEmpty(testimonialContent)) {
-      return CommonService.showError("Content should not empty");
+    if (testimonialContentIsEmpty) {
+      CommonService.showError("Content should not empty");
     }
+    if (testimonialTitleIsEmpty || testimonialContentIsEmpty) return;
 
     const onSuccess = () => {
       this.setState({
@@ -354,7 +357,7 @@ class ProfileCard extends Component {
     this.disableSubmitOnPostForms();
     this.props.onUploadPhoto(files, title, onSuccess, this.enableSubmitOnPostForms);
   }
-  
+
   /**
    * upload photo
    */
@@ -386,12 +389,15 @@ class ProfileCard extends Component {
   onAddStory(e) {
     e.preventDefault();
     const { storyTitle, storyContent } = this.state;
-    if (_.isEmpty(storyTitle)) {
-      return CommonService.showError("Title should not be empty.");
+    const titleIsEmpty = _.isEmpty(storyTitle) || !storyTitle.trim().length;
+    const storyContentIsEmpty = _.isEmpty(storyContent) || !storyContent.trim().length;
+    if (titleIsEmpty) {
+      CommonService.showError("Title should not be empty.");
     }
-    if (_.isEmpty(storyContent)) {
-      return CommonService.showError("Message should not be empty.");
+    if (storyContentIsEmpty) {
+      CommonService.showError("Message should not be empty.");
     }
+    if (titleIsEmpty || storyContentIsEmpty) return;
 
     const onSuccess = () => {
       this.setState({
@@ -405,7 +411,7 @@ class ProfileCard extends Component {
                           onSuccess,
                           this.enableSubmitOnPostForms);
   }
-  
+
   onAddFlag() {
     const $p = !!this.props.attr ? this.props.attr : {};
     const flag = $p.flaggingOpts[ this.state.activeFlagId - 1 ];
@@ -416,7 +422,7 @@ class ProfileCard extends Component {
       "explanation": flag.details,
       "status": "Requested"
     };
-    
+
     this.props.onAddFlag(entity, () => {
       this.setState({
         activeFlagId: 1, flagEntityId: '', flagEntityType: ''
