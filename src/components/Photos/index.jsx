@@ -12,7 +12,7 @@ class Photos extends Component {
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
     this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
-    
+
     this.state = {
       activePhoto: '',
       prevPhoto: '',
@@ -21,14 +21,14 @@ class Photos extends Component {
     };
     this.type = 'Photo';
   }
-  
+
   componentDidMount() {
     this.setState({
       prevPhoto: this.props.photos[ 2 ],
       nextPhoto: this.props.photos[ 1 ]
     });
   }
-  
+
   setActivePhoto(index) {
     this.setState({
       activePhoto: this.props.photos[ index ],
@@ -39,7 +39,7 @@ class Photos extends Component {
     });
     this.setStoryNextPrevIndex(index, this.props.photos.length);
   }
-  
+
   /**
    * salute post
    */
@@ -49,7 +49,7 @@ class Photos extends Component {
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
-  
+
   /**
    * share post
    */
@@ -59,13 +59,13 @@ class Photos extends Component {
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
-  
+
   clearActivePhoto() {
     this.setState({
       activePhoto: ''
     });
   }
-  
+
   next() {
     const len = this.props.photos.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
@@ -73,7 +73,7 @@ class Photos extends Component {
     newIndex = Math.min(newIndex, len - 1);
     this.setStoryNextPrevIndex(newIndex, len);
   }
-  
+
   prev() {
     const len = this.props.photos.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
@@ -81,7 +81,7 @@ class Photos extends Component {
     newIndex = Math.max(newIndex, 0);
     this.setStoryNextPrevIndex(newIndex, len);
   }
-  
+
   setStoryNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
@@ -92,12 +92,12 @@ class Photos extends Component {
       nextPhoto: this.props.photos[ nextIndex ]
     });
   }
-  
+
   render() {
     const stories = this.props.photos;
     const profileName = this.props.profileName;
     const activeStory = this.state.activePhoto;
-    
+
     return (
       <div className="collection-list-wrap">
         <h3 className="title">Photos of {profileName}</h3>
@@ -105,7 +105,7 @@ class Photos extends Component {
           <a className="btn btn-rt-2 btn-search"> </a>
           <a className="btn btn-rt-1 btn-upload"><span className="tx">Upload</span> </a>
         </span>
-        
+
         {!this.state.activePhoto
           ? (
             <div>
@@ -147,13 +147,13 @@ class Photos extends Component {
                      onClick={this.clearActivePhoto}
                   > </a>
                   <a className="flag" onClick={() => window.showProfileFlagPopUp('Photo', activeStory.id)}>{''}</a>
-                  
+
                   <article className="article">
                     <h3 className="sticky-md">{activeStory.title}</h3>
                     <div className="fullstory fullstory-photo">
                       <img src={activeStory.photoFile.fileURL} alt=""/>
                     </div>
-                    
+
                     <footer className="article-footer">
                       <div className="col col-meta">
                         <div className="meta-gr">
@@ -182,7 +182,7 @@ class Photos extends Component {
                         <a className="btn btn-share" onClick={() => this.sharePost()}>Share</a>
                       </div>
                     </footer>
-                    
+
                     {!!this.state.activeSlideIndex > 0
                     && (<a className="slide-arrow prev"
                            onClick={this.prev}
@@ -218,7 +218,7 @@ class Photos extends Component {
             </div>
           )
         }
-      
+
       </div>
     )
   }

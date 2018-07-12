@@ -11,18 +11,18 @@ import './styles.scss';
 class ProfileInfoTabs extends Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       activeTab: "stories"
     };
   }
-  
+
   render() {
     const stories = this.props.stories;
     const testimonials = this.props.testimonials;
     const badges = this.props.badges;
     const photos = this.props.photos;
-    
+
     const stObj = {
       stories: stories.items || [], ...stories,
       fetchStories: this.props.fetchStories,
@@ -41,14 +41,14 @@ class ProfileInfoTabs extends Component {
       fetchPhotos: this.props.fetchPhotos,
       profileName: this.props.profileName
     };
-    
+
     const navs = _.clone(PROFILE_TAB_NAVS);
     navs[ 0 ].count = stories.total;
     navs[ 1 ].count = photos.total;
     navs[ 2 ].count = testimonials.total;
     navs[ 3 ].count = badges.total;
     return (
-      <div className="profile-tabs">
+      <div id="tabnavs" className="profile-tabs">
         <div className="tabnav-view">
           <nav className="bar-tabnavs viewport">
             {
