@@ -444,7 +444,7 @@ class ProfileCard extends Component {
 
                   <h5>{$p.msgTitle}</h5>
                   <div className="desc">
-                    Share a message, photo, or memory of {$p.profileName}. You can also research historical information (if applicable) and award a badge of honor. <a>Read more</a>
+                    Share a message, photo, or memory of {$p.profileName}. You can also research historical information (if applicable) and award a badge of honor. <a href="#tabnavs">Read more</a>
                   </div>
                 </div>
               </div>

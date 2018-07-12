@@ -20,7 +20,7 @@ class Search extends Component {
     this.makeFilters = this.makeFilters.bind(this);
     this.updateResult = this.updateResult.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    
+
     this.$s = this.$s.bind(this);
 
     this.state = {
@@ -44,11 +44,11 @@ class Search extends Component {
       deathDateDay: props.filters.deathDateStart ? new Date(props.filters.deathDateStart).getUTCDate() + '' : '',
     };
   }
-  
+
   componentWillMount() {
     this.props.dataAction.getData();
   }
-  
+
   componentWillReceiveProps(nextProps) {
     // if (!isEmpty(nextProps.filters)) {
     this.setState({
@@ -68,7 +68,7 @@ class Search extends Component {
     });
     // }
   }
-  
+
   // state update function
   $s(attr, delay) {
     return () => {
@@ -81,14 +81,14 @@ class Search extends Component {
       }
     }
   }
-  
+
   zeroFill(s) {
     if (s.length === 1) {
       return '0' + s;
     }
     return s;
   }
-  
+
   makeFilters() {
     const birthDate = `${this.state.birthDateYear}-${this.zeroFill(this.state.birthDateMonth)}-${this.zeroFill(this.state.birthDateDay)}`;
     const deathDate = `${this.state.deathDateYear}-${this.zeroFill(this.state.deathDateMonth)}-${this.zeroFill(this.state.deathDateDay)}`;
@@ -112,7 +112,7 @@ class Search extends Component {
     }
     return filters;
   }
-  
+
   // state update function
   handleChange(key, value) {
     const state = this.state;
@@ -124,39 +124,39 @@ class Search extends Component {
   updateResult() {
     this.props.dataAction.searchVeterans(this.makeFilters());
   }
-  
+
   handlePageChange(offset) {
     const state = this.state;
     state[ 'offset' ] = offset;
     this.setState(state, () => this.props.dataAction.searchVeterans(this.makeFilters()));
   }
-  
+
   // toggleFilter
   toggleFilter() {
     this.setState({
       isFilterView: !this.state.isFilterView
     })
   }
-  
+
   // closeFilter
   closeFilter() {
     this.setState({
       isFilterView: false
     });
   }
-  
+
   resetFilter() {
     this.props.dataAction.resetFilter();
   }
-  
+
   render() {
     const { footerLinks, feedback, notifications } = { ...this.props.db };
     const { veterans, branches, cemeteries } = this.props;
-    
+
     return (
       <div className="page-wrapper">
         <MainHeaderComponent attr={{ addClass: 'hasborder', notifications: notifications }}/>
-        
+
         <main className="main hasborder">
           <div className={"search-section " + (this.state.isFilterView ? 'open' : '')}>
             <div className="viewport">
@@ -164,7 +164,7 @@ class Search extends Component {
                 <h3 className="sidebar-title">Filters <a
                   onClick={this.closeFilter}
                   className="close-sidebar"> </a></h3>
-                
+
                 <Toggler attr={{ title: 'Branch of service', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con">
                     <select className="selectctrl" value={this.state.branchId}
@@ -178,7 +178,7 @@ class Search extends Component {
                     </select>
                   </div>
                 </Toggler>
-                
+
                 <Toggler attr={{ title: 'Date of Birth', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con fx fields-3">
                     <div className="gr gr-1">
@@ -198,7 +198,7 @@ class Search extends Component {
                     </div>
                   </div>
                 </Toggler>
-                
+
                 <Toggler attr={{ title: 'Date of Passing', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con fx fields-3">
                     <div className="gr gr-1">
@@ -218,7 +218,7 @@ class Search extends Component {
                     </div>
                   </div>
                 </Toggler>
-                
+
                 <Toggler attr={{ title: 'Burial Location', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con">
                     <select className="selectctrl" value={this.state.cemeteryId}
@@ -232,7 +232,7 @@ class Search extends Component {
                     </select>
                   </div>
                 </Toggler>
-                
+
                 <Toggler attr={{ title: 'Location Served', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con">
                     <input type="text" value={this.state.served}
@@ -240,7 +240,7 @@ class Search extends Component {
                            className="textctrl fluid"/>
                   </div>
                 </Toggler>
-                
+
                 <Toggler attr={{ title: 'Division', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con">
                     <input type="text" value={this.state.division}
@@ -248,25 +248,26 @@ class Search extends Component {
                            className="textctrl fluid"/>
                   </div>
                 </Toggler>
-                
+
                 <Toggler attr={{ title: 'Squadron / Ship', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con">
                     <input type="text" value={this.state.squadronShip} className="textctrl fluid"
                            onChange={(event) => this.handleChange('squadronShip', event.target.value)}/>
                   </div>
                 </Toggler>
-                
+
                 <div className="bar-action">
                   <a className="btn fluid" onClick={this.updateResult}>Update Results</a>
                 </div>
-                
+
                 <div className="bar-reset">
                   <a className="lnk"
                     // onClick={() => this.refs.filterForm.reset()}
                      onClick={this.resetFilter}
                   >Reset Filter</a>
                 </div>
-              
+                <br/>
+
               </form>
               <div className="col col-result">
                 {veterans.items && veterans.items.length > 0
@@ -274,7 +275,7 @@ class Search extends Component {
                     <div>
                       <h3 className="fx"><span><span className="count"> {veterans.total}</span> Results for  <span
                         className='keyword'>“{this.state.keyword}”</span></span>
-                        
+
                         <a
                           onClick={this.toggleFilter}
                           className="btn btn-filter">Filter</a>
@@ -293,7 +294,7 @@ class Search extends Component {
               </div>
             </div>
           </div>
-          
+
           <MainFooter props={{ ...footerLinks, ...feedback, ...{ addClass: 'sticky' } }}/>
         </main>
       </div>

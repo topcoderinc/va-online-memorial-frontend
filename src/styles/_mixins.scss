@@ -36,6 +36,12 @@
   }
 }
 
+@mixin viewDesktop {
+  @media screen and (min-width: 993px) {
+    @content;
+  }
+}
+
 @mixin viewLg {
   @media screen and (max-width: 1379px) {
     @content;

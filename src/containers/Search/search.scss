@@ -1,11 +1,11 @@
 @import '../../styles/_mixins.scss';
 
 .search-section {
-  padding-top: 62px; 
+  padding-top: 62px;
   .viewport{
     display: flex;
   }
-  
+
   > .inner{
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.4);
     padding: 20px 30px;
@@ -26,13 +26,15 @@
     .sidebar-title{
       position: relative;
       .close-sidebar{
-        background: url('../../i/xb.png') 0 0 no-repeat;
-        background-size: 17px;
-        position: absolute;
-        right: 0;
-        top: 13px;
-        width: 21px;
-        height: 21px;
+        @include viewMd{
+          background: url('../../i/xb.png') 0 0 no-repeat;
+          background-size: 17px;
+          position: absolute;
+          right: 0;
+          top: 13px;
+          width: 21px;
+          height: 21px;
+        }
       }
     }
   }
@@ -83,10 +85,14 @@
       align-items: center;
     }
 
-    .btn-filter{
+    .btn-filter {
       width: 65px;
       height: 32px;
       line-height: 32px;
+
+      @include viewDesktop {
+        display: none;
+      }
     }
   }
 
