@@ -2,6 +2,7 @@ import React from 'react';
 import {get} from 'lodash';
 import Dropzone from 'react-dropzone';
 import {DEFAULT_PROFILE_DATA} from '../../config';
+import CommonService from "../../services/common";
 
 import './setting-request.scss';
 
@@ -33,9 +34,18 @@ class SettingRequest extends React.Component{
 
   createNokRequest() {
     const { veteranId, files } = this.state;
-    if (veteranId === '' || files.length === 0) {
-      return;
+    const veteranIsNotSelected = veteranId === '';
+    const nofilesUploaded = files.length === 0;
+    if (veteranIsNotSelected) {
+      CommonService.showError('Please select a Veteran Name');
     }
+
+    if (nofilesUploaded) {
+      CommonService.showError('Please upload a file');
+    }
+
+    if (veteranIsNotSelected || nofilesUploaded) return;
+
     this.props.createNokRequest(files, veteranId);
   }
 

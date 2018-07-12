@@ -82,7 +82,7 @@ class Setting extends Component {
    * deactive account
    */
   deactivate() {
-    this.props.actions.deactivate();
+    return this.props.actions.deactivate();
   }
 
   /**
