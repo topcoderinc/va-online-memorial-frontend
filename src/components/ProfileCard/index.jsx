@@ -91,10 +91,20 @@ class ProfileCard extends Component {
 
   // file drop handler
   onDrop(files) {
+    this.revokePreviousFilePreviewURL();
+
     this.setState({
       files
     });
   }
+
+  // Releases the previous object to avoid memory leaks
+  revokePreviousFilePreviewURL() {
+    if (this.state.files > 0) {
+      window.URL.revokeObjectURL(this.state.files[0].preview)
+    }
+  }
+
 
   //toggleBadgeSelect
   toggleBadgeSelect(index) {
@@ -155,6 +165,7 @@ class ProfileCard extends Component {
 
   resetPopup() {
     this.refs.photoCaption.value = "";
+    this.revokePreviousFilePreviewURL();
     this.setState({ 'files': [] });
   }
 
