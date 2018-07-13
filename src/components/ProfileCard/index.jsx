@@ -89,7 +89,7 @@ class ProfileCard extends Component {
     delete window.showProfileFlagPopUp;
   }
 
-  // flie drop handler
+  // file drop handler
   onDrop(files) {
     this.setState({
       files
@@ -676,17 +676,27 @@ class ProfileCard extends Component {
                   <div className="textarea textctrl">
                     <Dropzone className="dropzone"
                               accept="image/jpeg, image/png"
+                              multiple={false}
                               onDrop={this.onDrop.bind(this)}>
-                      <div className="drop-con hide-md">Drag and drop photo here or
-                        <div className="spaced"><a className="btn btn-browse">Browse</a></div>
-                        {
-                          this.state.files.map(f => <div className="filename"
-                                                         key={f.name}>{f.name} - {f.size} bytes</div>)
-                        }
-                      </div>
-                      <div className="drop-con show-md">Open phone album</div>
-
-
+                      { this.state.files.length > 0 ? (
+                        <div className="drop-con">
+                          {this.state.files.map(f =>
+                            <div key={f.name}>
+                              <div className="preview-container">
+                                <img src={f.preview} alt={`preview for ${f.name}`} />
+                              </div>
+                              <div className="filename" key={f.name}>{f.name} - {f.size} bytes</div>
+                            </div>
+                            )}
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="drop-con hide-md">Drag and drop photo here or
+                            <div className="spaced"><a className="btn btn-browse">Browse</a></div>
+                          </div>
+                          <div className="drop-con show-md">Open phone album</div>
+                        </div>
+                      )}
                     </Dropzone>
                   </div>
                 </div>
