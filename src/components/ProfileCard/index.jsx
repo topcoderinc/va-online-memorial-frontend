@@ -681,8 +681,8 @@ class ProfileCard extends Component {
                       { this.state.files.length > 0 ? (
                         <div className="drop-con">
                           {this.state.files.map(f =>
-                            <div key={f.name}>
-                              <div className="preview-container">
+                            <div className="file-info" key={f.name}>
+                              <div className="file-preview">
                                 <img src={f.preview} alt={`preview for ${f.name}`} />
                               </div>
                               <div className="filename" key={f.name}>{f.name} - {f.size} bytes</div>
@@ -690,11 +690,12 @@ class ProfileCard extends Component {
                             )}
                         </div>
                       ) : (
-                        <div>
-                          <div className="drop-con hide-md">Drag and drop photo here or
+                        <div className="drop-con">
+                          <div className="hide-md">
+                            <div>Drag and drop photo here or</div>
                             <div className="spaced"><a className="btn btn-browse">Browse</a></div>
                           </div>
-                          <div className="drop-con show-md">Open phone album</div>
+                          <div className="show-md">Open phone album</div>
                         </div>
                       )}
                     </Dropzone>
