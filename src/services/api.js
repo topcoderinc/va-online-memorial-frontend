@@ -430,10 +430,11 @@ export default class APIService {
    * decline NOK request by id
    * @param id
    */
-  static declineRequest(id) {
+  static declineRequest(id, reasonForDecline) {
     return request
-      .put(`${FALLBACK_API_URL}/v1/nextOfKins/${id}/decline`)
+      .put(`${FALLBACK_API_URL}/v1/nextOfKins/${id}/reject`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .send({ response: reasonForDecline })
       .use(errorRedirect)
       .use(CommonService.progressInterceptor)
       .end()

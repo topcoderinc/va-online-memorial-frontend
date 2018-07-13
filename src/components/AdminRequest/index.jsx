@@ -5,6 +5,10 @@ import { NavLink } from 'react-router-dom';
 
 import './admin-request.scss';
 
+// The API requires a reason the Request was declined that is recorded on the NextOfKin
+// model. This is a placeholder until the spec for a form/interface is created for this.
+const ReasonForDeclinePlaceholder = 'Declined by Admin';
+
 const AdminRequest = ({title, requests, archived, downloadFile, decline, approve })=>(
   <div className="admin-request">
     <h2 className="admin-request-title">{title}</h2>
@@ -48,7 +52,7 @@ const AdminRequest = ({title, requests, archived, downloadFile, decline, approve
                   <span className="hide-md">Email Post Creator</span>
                   <span className="show-md">Email Creator</span>
                 </a>
-                <a className="btn" onClick={() => decline(item.id)}>Decline</a>
+                <a className="btn" onClick={() => decline(item.id, ReasonForDeclinePlaceholder)}>Decline</a>
                 <a className="btn" onClick={() => approve(item.id)}>Approve</a>
               </div>
             }
