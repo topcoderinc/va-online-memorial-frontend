@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './styles.scss';
 import CommonService from "../../services/common";
 import APIService from "../../services/api";
+import {NavLink} from 'react-router-dom';
 
 class Badges extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class Badges extends Component {
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
     this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
+    this.updatePopupActive = this.updatePopupActive.bind(this);
     this.state = {
       activeStory: '',
       prevStory: '',
@@ -92,6 +94,10 @@ class Badges extends Component {
     });
   }
 
+  updatePopupActive() {
+    this.props.onPopupActive('isBadgePop');
+  }
+
   render() {
     const stories = this.props.stories;
     const profileName = this.props.profileName;
@@ -101,8 +107,8 @@ class Badges extends Component {
       <div className="collection-list-wrap collection-badges">
         <h3 className="title">Badges for {profileName}</h3>
         <span className="opts">
-          <a className="btn btn-rt-2 btn-search"> </a>
-          <a className="btn btn-badge btn-rt-1"><span className="tx">Add Badge</span> </a>
+          <NavLink className="btn btn-rt-2 btn-search" to="/search"> </NavLink>
+          <a className="btn btn-badge btn-rt-1" onClick={this.updatePopupActive}><span className="tx">Add Badge</span> </a>
         </span>
 
         {!this.state.activeStory

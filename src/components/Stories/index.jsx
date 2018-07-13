@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './styles.scss';
 import CommonService from "../../services/common";
 import APIService from "../../services/api";
+import {NavLink} from 'react-router-dom';
 
 class Stories extends Component {
   constructor(props) {
@@ -12,7 +13,8 @@ class Stories extends Component {
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
     this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
-    
+    this.updatePopupActive = this.updatePopupActive.bind(this);
+
     this.state = {
       activeStory: '',
       prevStory: '',
@@ -21,14 +23,14 @@ class Stories extends Component {
     };
     this.type = 'Story';
   }
-  
+
   componentDidMount() {
     this.setState({
       prevStory: this.props.stories[ 1 ],
       nextStory: this.props.stories[ 3 ]
     });
   }
-  
+
   /**
    * set activity story
    * @param index
@@ -44,7 +46,7 @@ class Stories extends Component {
     });
     this.setStoryNextPrevIndex(index, this.props.stories.length);
   }
-  
+
   /**
    * salute post
    */
@@ -54,7 +56,7 @@ class Stories extends Component {
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
-  
+
   /**
    * share post
    */
@@ -64,13 +66,13 @@ class Stories extends Component {
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
-  
+
   clearActiveStory() {
     this.setState({
       activeStory: ''
     });
   }
-  
+
   next() {
     const len = this.props.stories.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
@@ -78,7 +80,7 @@ class Stories extends Component {
     newIndex = Math.min(newIndex, len - 1);
     this.setStoryNextPrevIndex(newIndex, len);
   }
-  
+
   prev() {
     const len = this.props.stories.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
@@ -86,7 +88,7 @@ class Stories extends Component {
     newIndex = Math.max(newIndex, 0);
     this.setStoryNextPrevIndex(newIndex, len);
   }
-  
+
   setStoryNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
@@ -97,20 +99,24 @@ class Stories extends Component {
       nextStory: this.props.stories[ nextIndex ]
     });
   }
-  
+
+  updatePopupActive() {
+    this.props.onPopupActive('isWritePop');
+  }
+
   render() {
     const stories = this.props.stories;
     const profileName = this.props.profileName;
     const activeStory = this.state.activeStory;
-    
+
     return (
       <div className="collection-list-wrap">
         <h3 className="title">Stories of {profileName}</h3>
         <span className="opts">
-          <a className="btn btn-rt-2 btn-search"> </a>
-          <a className="btn btn-rt-1 btn-story"><span className="tx">Write Story</span> </a>
+          <NavLink className="btn btn-rt-2 btn-search" to="/search"> </NavLink>
+          <a className="btn btn-rt-1 btn-story" onClick={this.updatePopupActive}><span className="tx">Write Story</span> </a>
         </span>
-        
+
         {!this.state.activeStory
           ? (
             <div>
@@ -154,13 +160,13 @@ class Stories extends Component {
                      onClick={this.clearActiveStory}
                   > </a>
                   <a className="flag" onClick={() => window.showProfileFlagPopUp('Story', activeStory.id)}> </a>
-                  
+
                   <article className="article">
                     <h3>{activeStory.title}</h3>
                     <div className="fullstory"
                          dangerouslySetInnerHTML={{ __html: this.state.activeStory.text }}
                     />
-                    
+
                     <footer className="article-footer">
                       <div className="col col-meta">
                         <div className="meta-gr">
@@ -189,7 +195,7 @@ class Stories extends Component {
                         <a className="btn btn-share" onClick={() => this.sharePost()}>Share</a>
                       </div>
                     </footer>
-                    
+
                     {!!this.state.activeSlideIndex > 0
                     && (<a className="slide-arrow prev"
                            onClick={this.prev}
@@ -225,7 +231,7 @@ class Stories extends Component {
             </div>
           )
         }
-      
+
       </div>
     )
   }
