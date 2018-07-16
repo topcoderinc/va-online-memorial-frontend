@@ -32,6 +32,7 @@ class ProfileCard extends Component {
     this.state = {
       isTimelineEvents: false,
       activePop: '',
+      popupActive: '',
 
       nokError: {},
 
@@ -144,7 +145,9 @@ class ProfileCard extends Component {
   }
 
   hideAllPopup() {
-    this.props.onPopupActive('');
+    let newState = {};
+    newState.popupActive = '';
+    this.setState(newState);
     document.querySelector('body').classList.remove('has-popup');
     this.enableSubmitOnPostForms();
     this.resetPopup();
@@ -163,7 +166,7 @@ class ProfileCard extends Component {
     return (() => {
       this.hidePopup();
       let newState = {};
-      this.props.onPopupActive(popupName);
+      newState.popupActive = popupName;
       newState.nokError = {};
       this.setState(newState);
       document.querySelector('body').classList.add('has-popup');
@@ -558,7 +561,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isWritePop' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isWritePop' ? 'on' : '')}
              onClick={this.hideAllPopup}>
           <div className="popup"
                onClick={this.stopPropagation}
@@ -606,7 +609,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isFlagginPopup' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isFlagginPopup' ? 'on' : '')}
              onClick={this.hideAllPopup}>
           <div className="popup"
                onClick={this.stopPropagation}
@@ -648,7 +651,7 @@ class ProfileCard extends Component {
         </div>
 
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isUploadPop' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isUploadPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
           <div className="popup"
@@ -702,7 +705,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isEventPop' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isEventPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
           <div className="popup fluid-h"
@@ -770,7 +773,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isTestimonialPop' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isTestimonialPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
           <div className="popup"
@@ -813,7 +816,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isBadgePop' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isBadgePop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => { this.nodeStory = node; }}>
           <div className="popup"
@@ -860,7 +863,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isNokPopup' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isNokPopup' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => {
                this.nodeStory = node;
@@ -933,7 +936,7 @@ class ProfileCard extends Component {
           </div>
         </div>
 
-        <div className={"popup-wrap " + (this.props.popupActive === 'isThanksPop' ? 'on' : '')}
+        <div className={"popup-wrap " + (this.state.popupActive === 'isThanksPop' ? 'on' : '')}
              onClick={this.hideAllPopup}
              ref={node => {
                this.nodeStory = node;
