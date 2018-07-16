@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './styles.scss';
 import CommonService from "../../services/common";
 import APIService from "../../services/api";
+import {NavLink} from 'react-router-dom';
 
 class Testimonials extends Component {
   constructor(props) {
@@ -12,7 +13,8 @@ class Testimonials extends Component {
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
     this.setTestNextPrevIndex = this.setTestNextPrevIndex.bind(this);
-    
+    this.updatePopupActive = this.updatePopupActive.bind(this);
+
     this.state = {
       activeTest: '',
       prevTest: '',
@@ -21,14 +23,14 @@ class Testimonials extends Component {
     };
     this.type = 'Testimonial';
   }
-  
+
   componentDidMount() {
     this.setState({
       prevTest: this.props.tests[ 1 ],
       nextTest: this.props.tests[ 3 ]
     });
   }
-  
+
   setActiveTest(index) {
     this.setState({
       activeTest: this.props.tests[ index ],
@@ -39,7 +41,7 @@ class Testimonials extends Component {
     });
     this.setTestNextPrevIndex(index, this.props.tests.length);
   }
-  
+
   /**
    * salute post
    */
@@ -49,7 +51,7 @@ class Testimonials extends Component {
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
-  
+
   /**
    * share post
    */
@@ -59,13 +61,13 @@ class Testimonials extends Component {
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
-  
+
   clearActiveTest() {
     this.setState({
       activeTest: ''
     });
   }
-  
+
   next() {
     const len = this.props.tests.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
@@ -73,7 +75,7 @@ class Testimonials extends Component {
     newIndex = Math.min(newIndex, len - 1);
     this.setTestNextPrevIndex(newIndex, len);
   }
-  
+
   prev() {
     const len = this.props.tests.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
@@ -81,7 +83,7 @@ class Testimonials extends Component {
     newIndex = Math.max(newIndex, 0);
     this.setTestNextPrevIndex(newIndex, len);
   }
-  
+
   setTestNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
@@ -92,22 +94,26 @@ class Testimonials extends Component {
       nextTest: this.props.tests[ nextIndex ]
     });
   }
-  
+
+  updatePopupActive() {
+    this.props.onPopupActive('isTestimonialPop');
+  }
+
   render() {
     const tests = this.props.tests;
     const profileName = this.props.profileName;
     const activeTest = this.state.activeTest;
-    
+
     return (
       <div className="collection-list-wrap">
         <h3 className="title">Testimonials for {profileName}</h3>
         <span className="opts">
-          <a className="btn btn-rt-2 btn-search"> </a>
-          <a className="btn btn-rt-1 btn-test"><span className="tx"><span
+          <NavLink className="btn btn-rt-2 btn-search" to="/search"> </NavLink>
+          <a className="btn btn-rt-1 btn-test" onClick={this.updatePopupActive}><span className="tx"><span
             className="show-md">Write</span> Testimonial</span> </a>
         </span>
-        
-        
+
+
         {!this.state.activeTest
           ? (
             <div>
@@ -150,13 +156,13 @@ class Testimonials extends Component {
                      onClick={this.clearActiveTest}
                   > </a>
                   <a className="flag" onClick={() => window.showProfileFlagPopUp('Testimonial', activeTest.id)}>{''}</a>
-                  
+
                   <article className="article centered">
                     <h3>{activeTest.title}</h3>
                     <div className="fullstory"
                          dangerouslySetInnerHTML={{ __html: this.state.activeTest.text }}
                     />
-                    
+
                     <footer className="article-footer alt">
                       <div className="col col-meta">
                         <div className="meta-gr">
@@ -185,7 +191,7 @@ class Testimonials extends Component {
                         <a className="btn btn-share" onClick={() => this.sharePost()}>Share</a>
                       </div>
                     </footer>
-                    
+
                     {!!this.state.activeSlideIndex > 0
                     && (<a className="slide-arrow prev"
                            onClick={this.prev}
@@ -221,7 +227,7 @@ class Testimonials extends Component {
             </div>
           )
         }
-      
+
       </div>
     )
   }
