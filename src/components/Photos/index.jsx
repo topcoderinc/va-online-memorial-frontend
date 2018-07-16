@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './styles.scss';
 import CommonService from "../../services/common";
 import APIService from "../../services/api";
+import {NavLink} from 'react-router-dom';
 
 class Photos extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class Photos extends Component {
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
     this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
+    this.updatePopupActive = this.updatePopupActive.bind(this);
 
     this.state = {
       activePhoto: '',
@@ -93,6 +95,10 @@ class Photos extends Component {
     });
   }
 
+  updatePopupActive() {
+    this.props.onPopupActive('isUploadPop');
+  }
+
   render() {
     const stories = this.props.photos;
     const profileName = this.props.profileName;
@@ -102,8 +108,8 @@ class Photos extends Component {
       <div className="collection-list-wrap">
         <h3 className="title">Photos of {profileName}</h3>
         <span className="opts">
-          <a className="btn btn-rt-2 btn-search"> </a>
-          <a className="btn btn-rt-1 btn-upload"><span className="tx">Upload</span> </a>
+          <NavLink className="btn btn-rt-2 btn-search" to="/search"> </NavLink>
+          <a className="btn btn-rt-1 btn-upload" onClick={this.updatePopupActive}><span className="tx">Upload</span> </a>
         </span>
 
         {!this.state.activePhoto

@@ -26,20 +26,24 @@ class ProfileInfoTabs extends Component {
     const stObj = {
       stories: stories.items || [], ...stories,
       fetchStories: this.props.fetchStories,
-      profileName: this.props.profileName
+      profileName: this.props.profileName,
+      onPopupActive: this.props.onPopupActive
     };
     const testiObj = {
       tests: testimonials.items || [], ...testimonials,
-      profileName: this.props.profileName
+      profileName: this.props.profileName,
+      onPopupActive: this.props.onPopupActive
     };
     const badgesObj = {
       stories: badges.items || [], ...badges,
-      profileName: this.props.profileName
+      profileName: this.props.profileName,
+      onPopupActive: this.props.onPopupActive
     };
     const photosObj = {
       photos: photos.items || [], ...photos,
       fetchPhotos: this.props.fetchPhotos,
-      profileName: this.props.profileName
+      profileName: this.props.profileName,
+      onPopupActive: this.props.onPopupActive
     };
 
     const navs = _.clone(PROFILE_TAB_NAVS);
