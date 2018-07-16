@@ -19,7 +19,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    @innclude fontSecondary;
+    @include fontSecondary;
   }
   .basic-details-col-1{
     flex: 0 333px;
