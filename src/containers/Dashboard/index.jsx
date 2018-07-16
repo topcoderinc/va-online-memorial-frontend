@@ -31,7 +31,6 @@ class Search extends Component {
     this.onAddBadge = this.onAddBadge.bind(this);
     this.onAddNOK = this.onAddNOK.bind(this);
     this.onAddFlag = this.onAddFlag.bind(this);
-    this.updatePopupActive = this.updatePopupActive.bind(this);
 
     this.state = {
       isLoginActive: false,
@@ -45,7 +44,6 @@ class Search extends Component {
       photos: {},
       testimonials: {},
       badges: {},
-      popupActive: ''
     };
     this.profileId = this.props[ 'routeParams' ][ 'id' ];
   }
@@ -372,14 +370,6 @@ class Search extends Component {
     }).catch(err => CommonService.showError(err));
   }
 
-  /**
-   * update active popup
-   * @param popupActive the active popup
-   */
-   updatePopupActive(popupActive) {
-     this.setState({ popupActive });
-   }
-
   render() {
     const { footerLinks, feedback, notifications } = { ...this.props.db };
     const { relatedProfiles, profileCard } = this.state;
@@ -396,9 +386,7 @@ class Search extends Component {
                                           onAddBadge={this.onAddBadge}
                                           onAddNOK={this.onAddNOK}
                                           onAddFlag={this.onAddFlag}
-                                          onAddEvent={this.onAddEvent}
-                                          popupActive={this.state.popupActive}
-                                          onPopupActive={this.updatePopupActive}/>)}
+                                          onAddEvent={this.onAddEvent}/>)}
           {(<ProfileInfoTabs
             fetchStories={offset => this.fetchStories(offset)}
             stories={this.state.stories}
@@ -409,7 +397,6 @@ class Search extends Component {
             fetchBadges={offset => this.fetchBadges(offset)}
             badges={this.state.badges}
             profileName={profileCard ? profileCard.profileName : null}
-            onPopupActive={this.updatePopupActive}
           />)}
 
           {!!relatedProfiles && (<RelatedProfiles
