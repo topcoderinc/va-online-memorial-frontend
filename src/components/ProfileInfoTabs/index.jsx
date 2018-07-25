@@ -26,6 +26,7 @@ class ProfileInfoTabs extends Component {
     const stObj = {
       stories: stories.items || [], ...stories,
       fetchStories: this.props.fetchStories,
+      loadStory: this.props.loadStory,
       profileName: this.props.profileName,
       onPopupActive: this.props.onPopupActive
     };

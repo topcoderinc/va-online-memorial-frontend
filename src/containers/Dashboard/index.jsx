@@ -312,6 +312,19 @@ class Search extends Component {
     }).catch(err => CommonService.showError(err));
   }
 
+  loadStory(index) {
+    const items = this.state.stories.items;
+    const story = items[index];
+    return APIService.getStory(story.id).then((fetchedStory) => {
+      items[index] = fetchedStory;
+      this.setState({
+        stories: {
+          items
+        }
+      });
+    }).catch(err => CommonService.showError(err));
+  }
+
   /**
    * fetch photos
    * @param offset the page offset
@@ -401,6 +414,7 @@ class Search extends Component {
                                           onPopupActive={this.updatePopupActive}/>)}
           {(<ProfileInfoTabs
             fetchStories={offset => this.fetchStories(offset)}
+            loadStory={index => this.loadStory(index)}
             stories={this.state.stories}
             fetchPhotos={offset => this.fetchPhotos(offset)}
             photos={this.state.photos}

@@ -24,31 +24,20 @@ class Stories extends Component {
     this.type = 'Story';
   }
 
-  componentDidMount() {
-    this.setState({
-      prevStory: this.props.stories[ 1 ],
-      nextStory: this.props.stories[ 3 ]
-    });
-  }
-
   /**
    * set activity story
    * @param index
    */
   setActiveStory(index) {
-    this.setStoryNextPrevIndex(index, this.props.stories.length);
-    const story = this.props.stories[index];
-
     // Re-fetch the individual story to increment the post views counter
-    APIService.getStory(story.id).then((fetchedStory) => {
+    this.props.loadStory(index).then(() => {
       this.setState({
-        activeStory: fetchedStory,
-        activeSlideIndex: index,
         saluted: false,
       });
-      return APIService.isSaluted(this.type, fetchedStory.id)
+      return APIService.isSaluted(this.type, this.props.stories[index].id)
     }).then((rsp) => {
       this.setState({ saluted: rsp.saluted });
+      this.setStoryNextPrevIndex(index, this.props.stories.length);
     }).catch(err => CommonService.showError(err));
   }
 
@@ -84,15 +73,14 @@ class Stories extends Component {
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex += 1;
     newIndex = Math.min(newIndex, len - 1);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActiveStory(newIndex);
   }
 
   prev() {
-    const len = this.props.stories.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex -= 1;
     newIndex = Math.max(newIndex, 0);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActiveStory(newIndex);
   }
 
   setStoryNextPrevIndex(newIndex, len) {
