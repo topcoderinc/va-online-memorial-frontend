@@ -23,26 +23,31 @@ class ProfileInfoTabs extends Component {
     const badges = this.props.badges;
     const photos = this.props.photos;
 
-    const stObj = {
+    const storyObj = {
       stories: stories.items || [], ...stories,
       fetchStories: this.props.fetchStories,
-      loadStory: this.props.loadStory,
+      fetchStory: this.props.fetchStory,
       profileName: this.props.profileName,
       onPopupActive: this.props.onPopupActive
     };
-    const testiObj = {
-      tests: testimonials.items || [], ...testimonials,
+    const testimonialObj = {
+      testimonials: testimonials.items || [], ...testimonials,
+      fetchTestimonials: this.props.fetchTestimonials,
+      fetchTestimonial: this.props.fetchTestimonial,
       profileName: this.props.profileName,
       onPopupActive: this.props.onPopupActive
     };
     const badgesObj = {
       stories: badges.items || [], ...badges,
+      fetchBadges: this.props.fetchBadges,
+      fetchBadge: this.props.fetchBadge,
       profileName: this.props.profileName,
       onPopupActive: this.props.onPopupActive
     };
     const photosObj = {
       photos: photos.items || [], ...photos,
       fetchPhotos: this.props.fetchPhotos,
+      fetchPhoto: this.props.fetchPhoto,
       profileName: this.props.profileName,
       onPopupActive: this.props.onPopupActive
     };
@@ -69,8 +74,8 @@ class ProfileInfoTabs extends Component {
             }
           </nav>
           <div className="tab-con">
-            {this.state.activeTab === 'stories' && <Stories {...stObj} />}
-            {this.state.activeTab === 'testimonials' && <Testimonials {...testiObj} />}
+            {this.state.activeTab === 'stories' && <Stories {...storyObj} />}
+            {this.state.activeTab === 'testimonials' && <Testimonials {...testimonialObj} />}
             {this.state.activeTab === 'badges' && <Badges {...badgesObj} />}
             {this.state.activeTab === 'photos' && <Photos {...photosObj} />}
           </div>
@@ -82,5 +87,6 @@ class ProfileInfoTabs extends Component {
 
 ProfileInfoTabs.propTypes = {
   props: PropTypes.object
-}
+};
+
 export default ProfileInfoTabs;

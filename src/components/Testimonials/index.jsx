@@ -8,46 +8,46 @@ import {NavLink} from 'react-router-dom';
 class Testimonials extends Component {
   constructor(props) {
     super(props);
-    this.setActiveTest = this.setActiveTest.bind(this);
-    this.clearActiveTest = this.clearActiveTest.bind(this);
+    this.setActiveTestimonial = this.setActiveTestimonial.bind(this);
+    this.clearActiveTestimonial = this.clearActiveTestimonial.bind(this);
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
     this.setTestNextPrevIndex = this.setTestNextPrevIndex.bind(this);
     this.updatePopupActive = this.updatePopupActive.bind(this);
 
     this.state = {
-      activeTest: '',
-      prevTest: '',
-      nextTest: '',
+      activeTestimonial: '',
+      prevTestimonial: '',
+      nextTestimonial: '',
       saluted: false,
     };
     this.type = 'Testimonial';
   }
 
-  componentDidMount() {
-    this.setState({
-      prevTest: this.props.tests[ 1 ],
-      nextTest: this.props.tests[ 3 ]
-    });
-  }
-
-  setActiveTest(index) {
-    this.setState({
-      activeTest: this.props.tests[ index ],
-      activeSlideIndex: index
-    });
-    APIService.isSaluted(this.type, this.props.tests[ index ].id).then((rsp) => {
+  setActiveTestimonial(index) {
+    // Re-fetch the individual testimonial to increment the post views counter
+    this.props.fetchTestimonial(index).then(() => {
+      this.setState({
+        saluted: false,
+      });
+      return APIService.isSaluted(this.type, this.props.testimonials[index].id)
+    }).then((rsp) => {
       this.setState({ saluted: rsp.saluted });
-    });
-    this.setTestNextPrevIndex(index, this.props.tests.length);
+      this.setTestNextPrevIndex(index, this.props.testimonials.length);
+    }).catch(err => CommonService.showError(err));
   }
 
   /**
    * salute post
    */
   salutePost() {
-    APIService.salutePost(this.type, this.state.activeTest.id).then(() => {
-      this.setState({ saluted: true });
+    APIService.salutePost(this.type, this.state.activeTestimonial.id).then(() => {
+      const testimonial = this.state.activeTestimonial;
+      testimonial.saluteCount = parseInt(testimonial.shareCount, 10) + 1;
+      this.setState({
+        activeTestimonial: testimonial,
+        saluted: true
+      });
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -56,42 +56,45 @@ class Testimonials extends Component {
    * share post
    */
   sharePost() {
-    APIService.sharePost(this.type, this.state.activeTest.id).then(() => {
-      this.setState({ saluted: true });
+    APIService.sharePost(this.type, this.state.activeTestimonial.id).then(() => {
+      const testimonial = this.state.activeTestimonial;
+      testimonial.shareCount = parseInt(testimonial.shareCount, 10) + 1;
+      this.setState({
+        activeTestimonial: testimonial
+      });
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
 
-  clearActiveTest() {
+  clearActiveTestimonial() {
     this.setState({
-      activeTest: ''
+      activeTestimonial: ''
     });
   }
 
   next() {
-    const len = this.props.tests.length;
+    const len = this.props.testimonials.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex += 1;
     newIndex = Math.min(newIndex, len - 1);
-    this.setTestNextPrevIndex(newIndex, len);
+    this.setActiveTestimonial(newIndex);
   }
 
   prev() {
-    const len = this.props.tests.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex -= 1;
     newIndex = Math.max(newIndex, 0);
-    this.setTestNextPrevIndex(newIndex, len);
+    this.setActiveTestimonial(newIndex);
   }
 
   setTestNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
     this.setState({
-      activeTest: this.props.tests[ newIndex ],
+      activeTestimonial: this.props.testimonials[ newIndex ],
       activeSlideIndex: newIndex,
-      prevTest: this.props.tests[ prevIndex ],
-      nextTest: this.props.tests[ nextIndex ]
+      prevTestimonial: this.props.testimonials[ prevIndex ],
+      nextTestimonial: this.props.testimonials[ nextIndex ]
     });
   }
 
@@ -100,9 +103,8 @@ class Testimonials extends Component {
   }
 
   render() {
-    const tests = this.props.tests;
-    const profileName = this.props.profileName;
-    const activeTest = this.state.activeTest;
+    const { profileName, testimonials } = this.props;
+    const activeTestimonial = this.state.activeTestimonial;
 
     return (
       <div className="collection-list-wrap">
@@ -114,21 +116,21 @@ class Testimonials extends Component {
         </span>
 
 
-        {!this.state.activeTest
+        {!activeTestimonial
           ? (
             <div>
               <div className="viewport tt-collection-view">
-                {tests.map((item, i) => {
+                {testimonials.map((item, i) => {
                   return (
                     <div key={i} className="tt-collection-item-card-wrap">
                       <div className="collection-item-card  con-centered">
                         <h5>{item.title}</h5>
                         <div className="desc">{item.text}</div>
                         <div className="more"
-                             onClick={() => { this.setActiveTest(i) }}
+                             onClick={() => { this.setActiveTestimonial(i) }}
                         ><a>Read more</a></div>
                       </div>
-                      <div className="caption">Story by <strong>{item.createdBy.username}</strong></div>
+                      <div className="caption">Testimonial by <strong>{item.createdBy.username}</strong></div>
                       <div className="date">{CommonService.getCreateTime(item)}</div>
                     </div>
                   )
@@ -150,17 +152,17 @@ class Testimonials extends Component {
             <div className="viewport fullstory-view">
               <div className="fullstory-slide">
                 <div className="fullstory-card fullstory-card-md">
-                  <div className="postedby">Testimonials by <strong>{activeTest.createdBy.username}</strong></div>
-                  <div className="dateval">{CommonService.getCreateTime(activeTest)}</div>
+                  <div className="postedby">Testimonials by <strong>{activeTestimonial.createdBy.username}</strong></div>
+                  <div className="dateval">{CommonService.getCreateTime(activeTestimonial)}</div>
                   <a className="close"
                      onClick={this.clearActiveTest}
                   > </a>
-                  <a className="flag" onClick={() => window.showProfileFlagPopUp('Testimonial', activeTest.id)}>{''}</a>
+                  <a className="flag" onClick={() => window.showProfileFlagPopUp('Testimonial', activeTestimonial.id)}>{''}</a>
 
                   <article className="article centered">
-                    <h3>{activeTest.title}</h3>
+                    <h3>{activeTestimonial.title}</h3>
                     <div className="fullstory"
-                         dangerouslySetInnerHTML={{ __html: this.state.activeTest.text }}
+                         dangerouslySetInnerHTML={{ __html: activeTestimonial.text }}
                     />
 
                     <footer className="article-footer alt">
@@ -168,19 +170,19 @@ class Testimonials extends Component {
                         <div className="meta-gr">
                           <h6>Views</h6>
                           <div className="meta-val reads">
-                            {'1,333'}
+                            {activeTestimonial.viewCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Salutes</h6>
                           <div className="meta-val salutes">
-                            {'489'}
+                            {activeTestimonial.saluteCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Shares</h6>
                           <div className="meta-val shares">
-                            {'269'}
+                            {activeTestimonial.shareCount}
                           </div>
                         </div>
                       </div>
@@ -197,7 +199,7 @@ class Testimonials extends Component {
                            onClick={this.prev}
                     > </a>)
                     }
-                    {this.state.activeSlideIndex < this.props.tests.length - 1
+                    {this.state.activeSlideIndex < this.props.testimonials.length - 1
                     && (<a className="slide-arrow next"
                            onClick={this.next}
                     > </a>)
@@ -217,7 +219,7 @@ class Testimonials extends Component {
                   <div className="action"><a className="btn btn-more btn-md">Load More Testimonials</a></div>
                 </div>
                 <div className="col">
-                  {this.state.activeSlideIndex < this.props.tests.length - 1
+                  {this.state.activeSlideIndex < this.props.testimonials.length - 1
                   &&
                   (<div><h5><a onClick={this.next} className="next">Next Testimonial</a></h5>
                     <h4><a onClick={this.next}>{this.state.nextPhoto.title}</a></h4></div>)
@@ -235,6 +237,6 @@ class Testimonials extends Component {
 
 Testimonials.propTypes = {
   prop: PropTypes.object
-}
+};
 
 export default Testimonials;

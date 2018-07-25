@@ -238,7 +238,20 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
+  /**
+   * get photo by id
+   * @param id the photo id
+   */
+  static getPhoto(id) {
+    return request
+      .get(`${FALLBACK_API_URL}/v1/photos/${id}`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
+      .end()
+      .then((res) => res.body);
+  }
+
   /**
    * get testimonials
    * @param query the query entity
@@ -252,7 +265,20 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
+  /**
+   * get testimonial by id
+   * @param id the testimonial id
+   */
+  static getTestimonial(id) {
+    return request
+      .get(`${FALLBACK_API_URL}/v1/testimonials/${id}`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
+      .end()
+      .then((res) => res.body);
+  }
+
   /**
    * get badges
    * @param query the query entity
@@ -265,7 +291,20 @@ export default class APIService {
       .use(CommonService.progressInterceptor).end()
       .then((res) => res.body);
   }
-  
+
+  /**
+   * get badge by id
+   * @param id the badge id
+   */
+  static getBadge(id) {
+    return request
+      .get(`${FALLBACK_API_URL}/v1/badges/${id}`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
+      .end()
+      .then((res) => res.body);
+  }
+
   /**
    * search veterans
    * @param query

@@ -30,7 +30,7 @@ class Stories extends Component {
    */
   setActiveStory(index) {
     // Re-fetch the individual story to increment the post views counter
-    this.props.loadStory(index).then(() => {
+    this.props.fetchStory(index).then(() => {
       this.setState({
         saluted: false,
       });
@@ -240,6 +240,6 @@ class Stories extends Component {
 
 Stories.propTypes = {
   prop: PropTypes.object
-}
+};
 
 export default Stories;

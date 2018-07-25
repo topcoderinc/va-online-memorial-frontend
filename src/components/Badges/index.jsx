@@ -8,45 +8,45 @@ import {NavLink} from 'react-router-dom';
 class Badges extends Component {
   constructor(props) {
     super(props);
-    this.setActiveStory = this.setActiveStory.bind(this);
-    this.clearActiveStory = this.clearActiveStory.bind(this);
+    this.setActiveBadge = this.setActiveBadge.bind(this);
+    this.clearActiveBadge = this.clearActiveBadge.bind(this);
     this.prev = this.prev.bind(this);
     this.next = this.next.bind(this);
-    this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
+    this.setBadgeNextPrevIndex = this.setBadgeNextPrevIndex.bind(this);
     this.updatePopupActive = this.updatePopupActive.bind(this);
     this.state = {
-      activeStory: '',
-      prevStory: '',
-      nextStory: '',
+      activeBadge: '',
+      prevBadge: '',
+      nextBadge: '',
       saluted: false,
     };
     this.type = 'Badge';
   }
 
-  componentDidMount() {
-    this.setState({
-      prevStory: this.props.stories[ 1 ],
-      nextStory: this.props.stories[ 3 ]
-    });
-  }
-
-  setActiveStory(index) {
-    this.setState({
-      activeStory: this.props.stories[ index ],
-      activeSlideIndex: index
-    });
-    APIService.isSaluted(this.type, this.props.stories[ index ].id).then((rsp) => {
+  setActiveBadge(index) {
+    // Re-fetch the individual badge to increment the post views counter
+    this.props.fetchBadge(index).then(() => {
+      this.setState({
+        saluted: false,
+      });
+      return APIService.isSaluted(this.type, this.props.badges[index].id)
+    }).then((rsp) => {
       this.setState({ saluted: rsp.saluted });
-    });
-    this.setStoryNextPrevIndex(index, this.props.stories.length);
+      this.setBadgeNextPrevIndex(index, this.props.badges.length);
+    }).catch(err => CommonService.showError(err));
   }
 
   /**
    * salute post
    */
   salutePost() {
-    APIService.salutePost(this.type, this.state.activeStory.id).then(() => {
-      this.setState({ saluted: true });
+    APIService.salutePost(this.type, this.state.activeBadge.id).then(() => {
+      const badge = this.state.activeBadge;
+      badge.saluteCount = parseInt(badge.shareCount, 10) + 1;
+      this.setState({
+        activeBadge: badge,
+        saluted: true
+      });
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -55,42 +55,45 @@ class Badges extends Component {
    * share post
    */
   sharePost() {
-    APIService.sharePost(this.type, this.state.activeStory.id).then(() => {
-      this.setState({ saluted: true });
+    APIService.sharePost(this.type, this.state.activeBadge.id).then(() => {
+      const badge = this.state.activeBadge;
+      badge.shareCount = parseInt(badge.shareCount, 10) + 1;
+      this.setState({
+        activeBadge: badge
+      });
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
 
-  clearActiveStory() {
+  clearActiveBadge() {
     this.setState({
-      activeStory: ''
+      activeBadge: ''
     });
   }
 
   next() {
-    const len = this.props.stories.length;
+    const len = this.props.badges.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex += 1;
     newIndex = Math.min(newIndex, len - 1);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActiveBadge(newIndex);
   }
 
   prev() {
-    const len = this.props.stories.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex -= 1;
     newIndex = Math.max(newIndex, 0);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActiveBadge(newIndex);
   }
 
-  setStoryNextPrevIndex(newIndex, len) {
+  setBadgeNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
     this.setState({
-      activeStory: this.props.stories[ newIndex ],
+      activeBadge: this.props.badges[ newIndex ],
       activeSlideIndex: newIndex,
-      prevStory: this.props.stories[ prevIndex ],
-      nextStory: this.props.stories[ nextIndex ]
+      prevBadge: this.props.badges[ prevIndex ],
+      nextBadge: this.props.badges[ nextIndex ]
     });
   }
 
@@ -99,9 +102,8 @@ class Badges extends Component {
   }
 
   render() {
-    const stories = this.props.stories;
-    const profileName = this.props.profileName;
-    const activeStory = this.state.activeStory;
+    const { profileName, badges } = this.props;
+    const activeBadge = this.state.activeBadge;
 
     return (
       <div className="collection-list-wrap collection-badges">
@@ -111,15 +113,15 @@ class Badges extends Component {
           <a className="btn btn-badge btn-rt-1" onClick={this.updatePopupActive}><span className="tx">Add Badge</span> </a>
         </span>
 
-        {!this.state.activeStory
+        {!activeBadge
           ? (
             <div>
               <div className="viewport bd-collection-view">
-                {stories.map((item, i) => {
+                {badges.map((item, i) => {
                   return (
                     <div key={i} className="bd-collection-item-card-wrap">
                       <div className="collection-item-card con-centered  con-badge"
-                           onClick={() => { this.setActiveStory(i) }}>
+                           onClick={() => { this.setActiveBadge(i) }}>
                         <div className="desc desc-md">
                           <figure className={"fig-badge " + item.badgeType.iconURL}/>
                         </div>
@@ -147,37 +149,37 @@ class Badges extends Component {
             <div className="viewport fullstory-view">
               <div className="fullstory-slide">
                 <div className="fullstory-card fullstory-card-md alt">
-                  <div className="postedby">Badge from <strong>{activeStory.createdBy.username}</strong>
-                    <span className="hide-md">and <a>5 other pepole</a></span></div>
-                  <div className="dateval">{CommonService.getCreateTime(activeStory)}</div>
+                  <div className="postedby">Badge from <strong>{activeBadge.createdBy.username}</strong>
+                    <span className="hide-md">and <a>5 other people</a></span></div>
+                  <div className="dateval">{CommonService.getCreateTime(activeBadge)}</div>
                   <a className="close"
-                     onClick={this.clearActiveStory}
+                     onClick={this.clearActiveBadge}
                   > </a>
-                  <a className="flag" onClick={() => window.showProfileFlagPopUp('Badge', activeStory.id)}>{''}</a>
+                  <a className="flag" onClick={() => window.showProfileFlagPopUp('Badge', activeBadge.id)}>{''}</a>
                   <article className="article centered article-badges">
-                    <h3 className="show-md">{activeStory.title}</h3>
+                    <h3 className="show-md">{activeBadge.title}</h3>
                     <div className="fullstory">
-                      <figure className={"fig-badge bdg-md " + activeStory.badgeType.iconURL}></figure>
+                      <figure className={"fig-badge bdg-md " + activeBadge.badgeType.iconURL}></figure>
                     </div>
-                    <h3 className="hide-md">{activeStory.badgeType.name}</h3>
+                    <h3 className="hide-md">{activeBadge.badgeType.name}</h3>
                     <footer className="article-footer alt">
                       <div className="col col-meta">
                         <div className="meta-gr">
                           <h6>Views</h6>
                           <div className="meta-val reads">
-                            {'1,333'}
+                            {activeBadge.viewCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Salutes</h6>
                           <div className="meta-val salutes">
-                            {'469'}
+                            {activeBadge.saluteCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Shares</h6>
                           <div className="meta-val shares">
-                            {'256'}
+                            {activeBadge.shareCount}
                           </div>
                         </div>
                       </div>
@@ -193,7 +195,7 @@ class Badges extends Component {
                            onClick={this.prev}
                     > </a>)
                     }
-                    {this.state.activeSlideIndex < this.props.stories.length - 1
+                    {this.state.activeSlideIndex < this.props.badges.length - 1
                     && (<a className="slide-arrow next"
                            onClick={this.next}
                     > </a>)
@@ -206,17 +208,17 @@ class Badges extends Component {
                   {this.state.activeSlideIndex > 0
                   &&
                   (<div><h5><a onClick={this.prev} className="prev">Previous Badge</a></h5>
-                    <h4><a onClick={this.prev}>{this.state.prevStory.badgeType.name}</a></h4></div>)
+                    <h4><a onClick={this.prev}>{this.state.prevBadge.badgeType.name}</a></h4></div>)
                   }
                 </div>
                 <div className="col col-btn show-md">
                   <div className="action"><a className="btn btn-more btn-md">Load More Badges</a></div>
                 </div>
                 <div className="col">
-                  {this.state.activeSlideIndex < this.props.stories.length - 1
+                  {this.state.activeSlideIndex < this.props.badges.length - 1
                   &&
                   (<div><h5><a onClick={this.next} className="next">Next Badge</a></h5>
-                    <h4><a onClick={this.next}>{this.state.nextStory.badgeType.name}</a></h4></div>)
+                    <h4><a onClick={this.next}>{this.state.nextBadge.badgeType.name}</a></h4></div>)
                   }
                 </div>
               </div>
@@ -230,6 +232,6 @@ class Badges extends Component {
 
 Badges.propTypes = {
   prop: PropTypes.object
-}
+};
 
 export default Badges;
