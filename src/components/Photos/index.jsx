@@ -12,7 +12,7 @@ class Photos extends Component {
     this.clearActivePhoto = this.clearActivePhoto.bind(this);
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
-    this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
+    this.setPhotoNextPrevIndex = this.setPhotoNextPrevIndex.bind(this);
     this.updatePopupActive = this.updatePopupActive.bind(this);
 
     this.state = {
@@ -87,7 +87,7 @@ class Photos extends Component {
     this.setActivePhoto(newIndex);
   }
 
-  setStoryNextPrevIndex(newIndex, len) {
+  setPhotoNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
     this.setState({
