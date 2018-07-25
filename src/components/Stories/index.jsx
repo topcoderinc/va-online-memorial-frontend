@@ -46,7 +46,12 @@ class Stories extends Component {
    */
   salutePost() {
     APIService.salutePost(this.type, this.state.activeStory.id).then(() => {
-      this.setState({ saluted: true });
+      const story = this.state.activeStory;
+      story.saluteCount = parseInt(story.shareCount, 10) + 1;
+      this.setState({
+        activeStory: story,
+        saluted: true
+      });
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -55,9 +60,12 @@ class Stories extends Component {
    * share post
    */
   sharePost() {
-    APIService.sharePost(this.type, this.state.activeStory.id).then((post) => {
-      console.log(post);
-      this.setState({ saluted: true });
+    APIService.sharePost(this.type, this.state.activeStory.id).then(() => {
+      const story = this.state.activeStory;
+      story.shareCount = parseInt(story.shareCount, 10) + 1;
+      this.setState({
+        activeStory: story
+      });
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -99,8 +107,7 @@ class Stories extends Component {
   }
 
   render() {
-    const stories = this.props.stories;
-    const profileName = this.props.profileName;
+    const { profileName, stories } = this.props;
     const activeStory = this.state.activeStory;
 
     return (
