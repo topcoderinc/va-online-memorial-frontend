@@ -36,15 +36,20 @@ class Stories extends Component {
    * @param index
    */
   setActiveStory(index) {
-    this.setState({
-      activeStory: this.props.stories[ index ],
-      activeSlideIndex: index,
-      saluted: false,
-    });
-    APIService.isSaluted(this.type, this.props.stories[ index ].id).then((rsp) => {
-      this.setState({ saluted: rsp.saluted });
-    });
     this.setStoryNextPrevIndex(index, this.props.stories.length);
+    const story = this.props.stories[index];
+
+    // Re-fetch the individual story to increment the post views counter
+    APIService.getStory(story.id).then((fetchedStory) => {
+      this.setState({
+        activeStory: fetchedStory,
+        activeSlideIndex: index,
+        saluted: false,
+      });
+      return APIService.isSaluted(this.type, fetchedStory.id)
+    }).then((rsp) => {
+      this.setState({ saluted: rsp.saluted });
+    }).catch(err => CommonService.showError(err));
   }
 
   /**
@@ -61,7 +66,8 @@ class Stories extends Component {
    * share post
    */
   sharePost() {
-    APIService.sharePost(this.type, this.state.activeStory.id).then(() => {
+    APIService.sharePost(this.type, this.state.activeStory.id).then((post) => {
+      console.log(post);
       this.setState({ saluted: true });
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
@@ -172,19 +178,19 @@ class Stories extends Component {
                         <div className="meta-gr">
                           <h6>Reads</h6>
                           <div className="meta-val reads">
-                            {'1,333'}
+                            {activeStory.viewCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Salutes</h6>
                           <div className="meta-val salutes">
-                            {'489'}
+                            {activeStory.saluteCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Shares</h6>
                           <div className="meta-val shares">
-                            {'269'}
+                            {activeStory.shareCount}
                           </div>
                         </div>
                       </div>

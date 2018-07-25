@@ -211,7 +211,20 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
+  /**
+   * get story by id
+   * @param id the story id
+   */
+  static getStory(id) {
+    return request
+      .get(`${FALLBACK_API_URL}/v1/stories/${id}`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
+      .end()
+      .then((res) => res.body);
+  }
+
   /**
    * get photos
    * @param query the query entity
