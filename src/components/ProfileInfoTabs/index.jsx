@@ -38,7 +38,7 @@ class ProfileInfoTabs extends Component {
       onPopupActive: this.props.onPopupActive
     };
     const badgesObj = {
-      stories: badges.items || [], ...badges,
+      badges: badges.items || [], ...badges,
       fetchBadges: this.props.fetchBadges,
       fetchBadge: this.props.fetchBadge,
       profileName: this.props.profileName,
