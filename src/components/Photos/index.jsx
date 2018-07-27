@@ -12,7 +12,7 @@ class Photos extends Component {
     this.clearActivePhoto = this.clearActivePhoto.bind(this);
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
-    this.setStoryNextPrevIndex = this.setStoryNextPrevIndex.bind(this);
+    this.setPhotoNextPrevIndex = this.setPhotoNextPrevIndex.bind(this);
     this.updatePopupActive = this.updatePopupActive.bind(this);
 
     this.state = {
@@ -24,22 +24,17 @@ class Photos extends Component {
     this.type = 'Photo';
   }
 
-  componentDidMount() {
-    this.setState({
-      prevPhoto: this.props.photos[ 2 ],
-      nextPhoto: this.props.photos[ 1 ]
-    });
-  }
-
   setActivePhoto(index) {
-    this.setState({
-      activePhoto: this.props.photos[ index ],
-      activeSlideIndex: index
-    });
-    APIService.isSaluted(this.type, this.props.photos[ index ].id).then((rsp) => {
+    // Re-fetch the individual photo to increment the post views counter
+    this.props.fetchPhoto(index).then(() => {
+      this.setState({
+        saluted: false,
+      });
+      return APIService.isSaluted(this.type, this.props.photos[index].id)
+    }).then((rsp) => {
       this.setState({ saluted: rsp.saluted });
-    });
-    this.setStoryNextPrevIndex(index, this.props.photos.length);
+      this.setPhotoNextPrevIndex(index, this.props.photos.length);
+    }).catch(err => CommonService.showError(err));
   }
 
   /**
@@ -47,7 +42,12 @@ class Photos extends Component {
    */
   salutePost() {
     APIService.salutePost(this.type, this.state.activePhoto.id).then(() => {
-      this.setState({ saluted: true });
+      const photo = this.state.activePhoto;
+      photo.saluteCount = parseInt(photo.shareCount, 10) + 1;
+      this.setState({
+        activePhoto: photo,
+        saluted: true
+      });
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -57,7 +57,11 @@ class Photos extends Component {
    */
   sharePost() {
     APIService.sharePost(this.type, this.state.activePhoto.id).then(() => {
-      this.setState({ saluted: true });
+      const photo = this.state.activePhoto;
+      photo.shareCount = parseInt(photo.shareCount, 10) + 1;
+      this.setState({
+        activePhoto: photo
+      });
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -73,18 +77,17 @@ class Photos extends Component {
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex += 1;
     newIndex = Math.min(newIndex, len - 1);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActivePhoto(newIndex);
   }
 
   prev() {
-    const len = this.props.photos.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex -= 1;
     newIndex = Math.max(newIndex, 0);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActivePhoto(newIndex);
   }
 
-  setStoryNextPrevIndex(newIndex, len) {
+  setPhotoNextPrevIndex(newIndex, len) {
     const prevIndex = Math.max(newIndex - 1, 0);
     const nextIndex = Math.min(newIndex + 1, len - 1);
     this.setState({
@@ -100,9 +103,8 @@ class Photos extends Component {
   }
 
   render() {
-    const stories = this.props.photos;
-    const profileName = this.props.profileName;
-    const activeStory = this.state.activePhoto;
+    const { profileName, photos } = this.props;
+    const activePhoto = this.state.activePhoto;
 
     return (
       <div className="collection-list-wrap">
@@ -112,11 +114,11 @@ class Photos extends Component {
           <a className="btn btn-rt-1 btn-upload" onClick={this.updatePopupActive}><span className="tx">Upload</span> </a>
         </span>
 
-        {!this.state.activePhoto
+        {!activePhoto
           ? (
             <div>
               <div className="viewport ph-collection-view">
-                {stories.map((item, i) => {
+                {photos.map((item, i) => {
                   return (
                     <div key={i} className="ph-collection-item-card-wrap">
                       <div className="collection-item-card collection-photo"
@@ -147,17 +149,17 @@ class Photos extends Component {
             <div className="viewport fullstory-view">
               <div className="fullstory-slide">
                 <div className="fullstory-card">
-                  <div className="postedby">Photo by <strong>{activeStory.createdBy.username}</strong></div>
-                  <div className="dateval">{CommonService.getCreateTime(activeStory)}</div>
+                  <div className="postedby">Photo by <strong>{activePhoto.createdBy.username}</strong></div>
+                  <div className="dateval">{CommonService.getCreateTime(activePhoto)}</div>
                   <a className="close"
                      onClick={this.clearActivePhoto}
                   > </a>
-                  <a className="flag" onClick={() => window.showProfileFlagPopUp('Photo', activeStory.id)}>{''}</a>
+                  <a className="flag" onClick={() => window.showProfileFlagPopUp('Photo', activePhoto.id)}>{''}</a>
 
                   <article className="article">
-                    <h3 className="sticky-md">{activeStory.title}</h3>
+                    <h3 className="sticky-md">{activePhoto.title}</h3>
                     <div className="fullstory fullstory-photo">
-                      <img src={activeStory.photoFile.fileURL} alt=""/>
+                      <img src={activePhoto.photoFile.fileURL} alt=""/>
                     </div>
 
                     <footer className="article-footer">
@@ -165,19 +167,19 @@ class Photos extends Component {
                         <div className="meta-gr">
                           <h6>Views</h6>
                           <div className="meta-val reads">
-                            {'1,333'}
+                            {activePhoto.viewCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Salutes</h6>
                           <div className="meta-val salutes">
-                            {'489'}
+                            {activePhoto.saluteCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Shares</h6>
                           <div className="meta-val shares">
-                            {'269'}
+                            {activePhoto.shareCount}
                           </div>
                         </div>
                       </div>
@@ -232,6 +234,6 @@ class Photos extends Component {
 
 Photos.propTypes = {
   prop: PropTypes.object
-}
+};
 
 export default Photos;

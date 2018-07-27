@@ -313,6 +313,23 @@ class Search extends Component {
   }
 
   /**
+   * fetch story
+   * @param index the index of the story in the stories array to fetch/reload
+   */
+  fetchStory(index) {
+    const items = this.state.stories.items;
+    const story = items[index];
+    return APIService.getStory(story.id).then((fetched) => {
+      items[index] = fetched;
+      this.setState({
+        stories: {
+          items
+        }
+      });
+    }).catch(err => CommonService.showError(err));
+  }
+
+  /**
    * fetch photos
    * @param offset the page offset
    */
@@ -329,6 +346,23 @@ class Search extends Component {
           items, offset, limit: CONTENT_LIMIT, total: rsp.total
         }
       })
+    }).catch(err => CommonService.showError(err));
+  }
+
+  /**
+   * fetch photo
+   * @param index the index of the photo in the photos array to fetch/reload
+   */
+  fetchPhoto(index) {
+    const items = this.state.photos.items;
+    const photo = items[index];
+    return APIService.getPhoto(photo.id).then((fetched) => {
+      items[index] = fetched;
+      this.setState({
+        photos: {
+          items
+        }
+      });
     }).catch(err => CommonService.showError(err));
   }
 
@@ -353,6 +387,23 @@ class Search extends Component {
   }
 
   /**
+   * fetch photo
+   * @param index the index of the testimonial in the testimonials array to fetch/reload
+   */
+  fetchTestimonial(index) {
+    const items = this.state.testimonials.items;
+    const testimonial = items[index];
+    return APIService.getTestimonial(testimonial.id).then((fetched) => {
+      items[index] = fetched;
+      this.setState({
+        testimonials: {
+          items
+        }
+      });
+    }).catch(err => CommonService.showError(err));
+  }
+
+  /**
    * fetch badge
    * @param offset the page offset
    */
@@ -369,6 +420,23 @@ class Search extends Component {
           items, offset, limit: CONTENT_LIMIT, total: rsp.total
         }
       })
+    }).catch(err => CommonService.showError(err));
+  }
+
+  /**
+   * fetch badge
+   * @param index the index of the badge in the badges array to fetch/reload
+   */
+  fetchBadge(index) {
+    const items = this.state.badges.items;
+    const badge = items[index];
+    return APIService.getBadge(badge.id).then((fetched) => {
+      items[index] = fetched;
+      this.setState({
+        badges: {
+          items
+        }
+      });
     }).catch(err => CommonService.showError(err));
   }
 
@@ -401,12 +469,16 @@ class Search extends Component {
                                           onPopupActive={this.updatePopupActive}/>)}
           {(<ProfileInfoTabs
             fetchStories={offset => this.fetchStories(offset)}
+            fetchStory={index => this.fetchStory(index)}
             stories={this.state.stories}
             fetchPhotos={offset => this.fetchPhotos(offset)}
+            fetchPhoto={index => this.fetchPhoto(index)}
             photos={this.state.photos}
             fetchTestimonials={offset => this.fetchTestimonials(offset)}
+            fetchTestimonial={index => this.fetchTestimonial(index)}
             testimonials={this.state.testimonials}
             fetchBadges={offset => this.fetchBadges(offset)}
+            fetchBadge={index => this.fetchBadge(index)}
             badges={this.state.badges}
             profileName={profileCard ? profileCard.profileName : null}
             onPopupActive={this.updatePopupActive}

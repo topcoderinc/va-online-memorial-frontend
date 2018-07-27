@@ -24,27 +24,21 @@ class Stories extends Component {
     this.type = 'Story';
   }
 
-  componentDidMount() {
-    this.setState({
-      prevStory: this.props.stories[ 1 ],
-      nextStory: this.props.stories[ 3 ]
-    });
-  }
-
   /**
    * set activity story
    * @param index
    */
   setActiveStory(index) {
-    this.setState({
-      activeStory: this.props.stories[ index ],
-      activeSlideIndex: index,
-      saluted: false,
-    });
-    APIService.isSaluted(this.type, this.props.stories[ index ].id).then((rsp) => {
+    // Re-fetch the individual story to increment the post views counter
+    this.props.fetchStory(index).then(() => {
+      this.setState({
+        saluted: false,
+      });
+      return APIService.isSaluted(this.type, this.props.stories[index].id)
+    }).then((rsp) => {
       this.setState({ saluted: rsp.saluted });
-    });
-    this.setStoryNextPrevIndex(index, this.props.stories.length);
+      this.setStoryNextPrevIndex(index, this.props.stories.length);
+    }).catch(err => CommonService.showError(err));
   }
 
   /**
@@ -52,7 +46,12 @@ class Stories extends Component {
    */
   salutePost() {
     APIService.salutePost(this.type, this.state.activeStory.id).then(() => {
-      this.setState({ saluted: true });
+      const story = this.state.activeStory;
+      story.saluteCount = parseInt(story.shareCount, 10) + 1;
+      this.setState({
+        activeStory: story,
+        saluted: true
+      });
       CommonService.showSuccess(`${this.type} saluted successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -62,7 +61,11 @@ class Stories extends Component {
    */
   sharePost() {
     APIService.sharePost(this.type, this.state.activeStory.id).then(() => {
-      this.setState({ saluted: true });
+      const story = this.state.activeStory;
+      story.shareCount = parseInt(story.shareCount, 10) + 1;
+      this.setState({
+        activeStory: story
+      });
       CommonService.showSuccess(`${this.type} shared successfully`);
     }).catch(err => CommonService.showError(err));
   }
@@ -78,15 +81,14 @@ class Stories extends Component {
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex += 1;
     newIndex = Math.min(newIndex, len - 1);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActiveStory(newIndex);
   }
 
   prev() {
-    const len = this.props.stories.length;
     let newIndex = !!this.state.activeSlideIndex ? this.state.activeSlideIndex : 0;
     newIndex -= 1;
     newIndex = Math.max(newIndex, 0);
-    this.setStoryNextPrevIndex(newIndex, len);
+    this.setActiveStory(newIndex);
   }
 
   setStoryNextPrevIndex(newIndex, len) {
@@ -105,8 +107,7 @@ class Stories extends Component {
   }
 
   render() {
-    const stories = this.props.stories;
-    const profileName = this.props.profileName;
+    const { profileName, stories } = this.props;
     const activeStory = this.state.activeStory;
 
     return (
@@ -172,19 +173,19 @@ class Stories extends Component {
                         <div className="meta-gr">
                           <h6>Reads</h6>
                           <div className="meta-val reads">
-                            {'1,333'}
+                            {activeStory.viewCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Salutes</h6>
                           <div className="meta-val salutes">
-                            {'489'}
+                            {activeStory.saluteCount}
                           </div>
                         </div>
                         <div className="meta-gr">
                           <h6>Shares</h6>
                           <div className="meta-val shares">
-                            {'269'}
+                            {activeStory.shareCount}
                           </div>
                         </div>
                       </div>
@@ -239,6 +240,6 @@ class Stories extends Component {
 
 Stories.propTypes = {
   prop: PropTypes.object
-}
+};
 
 export default Stories;
