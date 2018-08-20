@@ -62,7 +62,6 @@ class Search extends Component {
   }
 
   onLoad() {
-    if (!AuthService.getCurrentUser()) return;
     this.props.dataAction.getData();
     /**
      * get veteran information
@@ -453,7 +452,6 @@ class Search extends Component {
     const { relatedProfiles, profileCard } = this.state;
     return (
       <div className="page-wrapper">
-        {!AuthService.getCurrentUser() && <Redirect to={'/'}/>}
         <MainHeaderComponent attr={{ notifications }}/>
 
         <main className="main">
