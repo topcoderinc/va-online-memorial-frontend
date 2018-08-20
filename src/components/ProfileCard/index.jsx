@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import {Scrollbars} from 'react-custom-scrollbars';
 import './profile-card.scss';
+import AuthService from "../../services/auth";
 import CommonService from "../../services/common";
 import ProfilePicture from '../ProfilePicture';
 import * as _ from 'lodash';
@@ -456,17 +457,19 @@ class ProfileCard extends Component {
                   </div>
                 </div>
               </div>
-              <div className="col col-opts">
-                <a className="btn btn-story"
-                   onClick={this.showPopup('isWritePop')}
-                ><span className="tx">Write Story</span> </a>
-                <a className="btn btn-upload"
-                   onClick={this.showPopup('isUploadPop')}><span className="tx">Upload</span> </a>
-                <a className="btn btn-test"
-                   onClick={this.showPopup('isTestimonialPop')}><span className="tx">Testimonial</span> </a>
-                <a className="btn btn-badge"
-                   onClick={this.showPopup('isBadgePop')}><span className="tx">Badge</span> </a>
-              </div>
+              {AuthService.getCurrentUser() && (
+                <div className="col col-opts">
+                  <a className="btn btn-story"
+                     onClick={this.showPopup('isWritePop')}
+                  ><span className="tx">Write Story</span> </a>
+                  <a className="btn btn-upload"
+                     onClick={this.showPopup('isUploadPop')}><span className="tx">Upload</span> </a>
+                  <a className="btn btn-test"
+                     onClick={this.showPopup('isTestimonialPop')}><span className="tx">Testimonial</span> </a>
+                  <a className="btn btn-badge"
+                     onClick={this.showPopup('isBadgePop')}><span className="tx">Badge</span> </a>
+                </div>
+              )}
             </div>
           </div>
         </div>

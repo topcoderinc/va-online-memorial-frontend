@@ -16,7 +16,6 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import {DEFAULT_PROFILE_DATA} from '../../config';
 import AuthService from "../../services/auth";
-import {Redirect} from "react-router-dom";
 
 const CONTENT_LIMIT = 4; // stories,photos,page limit
 
