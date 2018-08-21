@@ -561,11 +561,13 @@ class ProfileCard extends Component {
                   }
                   </tbody>
                 </table>
-                <div className="action">
-                  <a className="btn btn-event"
-                     onClick={this.showPopup('isEventPop')}
-                  ><span className="ico">Event</span> </a>
-                </div>
+                {AuthService.getCurrentUser() && (
+                  <div className="action">
+                    <a className="btn btn-event"
+                       onClick={this.showPopup('isEventPop')}
+                    ><span className="ico">Event</span> </a>
+                  </div>
+                )}
               </div>
 
             </div>
