@@ -441,6 +441,7 @@ class ProfileCard extends Component {
   }
 
   render() {
+    const currentUser = AuthService.getCurrentUser();
     const $p = !!this.props.attr ? this.props.attr : {};
     return (
       <div className="profile-card">
@@ -457,7 +458,7 @@ class ProfileCard extends Component {
                   </div>
                 </div>
               </div>
-              {AuthService.getCurrentUser() && (
+              {currentUser && (
                 <div className="col col-opts">
                   <a className="btn btn-story"
                      onClick={this.showPopup('isWritePop')}
@@ -479,9 +480,11 @@ class ProfileCard extends Component {
             <div className="profile-details">
               <ProfilePicture imageSrc={$p.profileImgSrc}
                               imageAlt={$p.profileName}>
-                <a className="lnk send-request-lnk"
-                   onClick={this.showPopup('isNokPopup')}
-                >Send NOK Request</a>
+                {currentUser &&
+                  <a className="lnk send-request-lnk"
+                     onClick={this.showPopup('isNokPopup')}
+                  >Send NOK Request</a>
+                }
               </ProfilePicture>
               <div className="bar-basicinfo">
                 <div className="col col-name">
@@ -561,7 +564,7 @@ class ProfileCard extends Component {
                   }
                   </tbody>
                 </table>
-                {AuthService.getCurrentUser() && (
+                {currentUser && (
                   <div className="action">
                     <a className="btn btn-event"
                        onClick={this.showPopup('isEventPop')}
