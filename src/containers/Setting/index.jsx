@@ -144,9 +144,10 @@ class Setting extends Component {
   /**
    * decline request by id
    * @param id the post id
+   * @param reasonForDecline the string recorded for why the NOK request was declined
    */
-  declineRequest(id) {
-    this.props.dataAction.deleteNOKRequest(id);
+  declineRequest(id, reasonForDecline) {
+    this.props.dataAction.declineRequest(id, reasonForDecline);
   }
 
   /**

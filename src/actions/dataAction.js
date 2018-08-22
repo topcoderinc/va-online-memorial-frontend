@@ -374,9 +374,9 @@ function approveRequest(id) {
  * @param id request id
  * @returns {Function}
  */
-function declineRequest(id) {
+function declineRequest(id, reasonForDecline) {
   return function (dispatch) {
-    API.declineRequest(id).then(() => {
+    API.declineRequest(id, reasonForDecline).then(() => {
       updateRequest(dispatch);
       toast('decline success', { type: 'info' });
     });
