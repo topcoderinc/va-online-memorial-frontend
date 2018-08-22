@@ -4,6 +4,7 @@ import './styles.scss';
 import CommonService from "../../services/common";
 import APIService from "../../services/api";
 import {NavLink} from 'react-router-dom';
+import AuthService from '../../services/auth';
 
 class Badges extends Component {
   constructor(props) {
@@ -104,13 +105,17 @@ class Badges extends Component {
   render() {
     const { profileName, badges } = this.props;
     const activeBadge = this.state.activeBadge;
+    const currentUser = AuthService.getCurrentUser();
 
     return (
       <div className="collection-list-wrap collection-badges">
         <h3 className="title">Badges for {profileName}</h3>
         <span className="opts">
           <NavLink className="btn btn-rt-2 btn-search" to="/search"> </NavLink>
-          <a className="btn btn-badge btn-rt-1" onClick={this.updatePopupActive}><span className="tx">Add Badge</span> </a>
+          {currentUser &&
+            <a className="btn btn-badge btn-rt-1" onClick={this.updatePopupActive}><span className="tx">Add Badge</span>
+            </a>
+          }
         </span>
 
         {!activeBadge
@@ -184,8 +189,8 @@ class Badges extends Component {
                         </div>
                       </div>
                       <div className="col">
-                        <a className={`btn btn-salute2 ${this.state.saluted ? ' disabled' : ''}`}
-                           onClick={() => this.state.saluted ? null : this.salutePost()}
+                        <a className={`btn btn-salute2 ${this.state.saluted || !currentUser ? ' disabled' : ''}`}
+                           onClick={() => this.state.saluted || !currentUser ? null : this.salutePost()}
                            disabled={this.state.saluted}>Salute{this.state.saluted ? 'd' : ''}</a>
                         <a className="btn btn-share" onClick={() => this.sharePost()}>Share</a>
                       </div>

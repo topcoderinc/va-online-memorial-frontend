@@ -53,15 +53,8 @@ class SearchTable extends Component {
    * @param link
    */
   onItemClick(link) {
-    if (AuthService.getCurrentUser()) {
-      this.props.uiAction.hideSearchModal();
-      this.setState({ redirectTo: link });
-    } else {
-      console.log(window.showLoginDialog)
-      if (window.showLoginDialog) {
-        window.showLoginDialog();
-      }
-    }
+    this.props.uiAction.hideSearchModal();
+    this.setState({ redirectTo: link });
   }
   
   render() {

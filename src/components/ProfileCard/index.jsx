@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import {Scrollbars} from 'react-custom-scrollbars';
 import './profile-card.scss';
+import AuthService from "../../services/auth";
 import CommonService from "../../services/common";
 import ProfilePicture from '../ProfilePicture';
 import * as _ from 'lodash';
@@ -440,6 +441,7 @@ class ProfileCard extends Component {
   }
 
   render() {
+    const currentUser = AuthService.getCurrentUser();
     const $p = !!this.props.attr ? this.props.attr : {};
     return (
       <div className="profile-card">
@@ -456,17 +458,19 @@ class ProfileCard extends Component {
                   </div>
                 </div>
               </div>
-              <div className="col col-opts">
-                <a className="btn btn-story"
-                   onClick={this.showPopup('isWritePop')}
-                ><span className="tx">Write Story</span> </a>
-                <a className="btn btn-upload"
-                   onClick={this.showPopup('isUploadPop')}><span className="tx">Upload</span> </a>
-                <a className="btn btn-test"
-                   onClick={this.showPopup('isTestimonialPop')}><span className="tx">Testimonial</span> </a>
-                <a className="btn btn-badge"
-                   onClick={this.showPopup('isBadgePop')}><span className="tx">Badge</span> </a>
-              </div>
+              {currentUser && (
+                <div className="col col-opts">
+                  <a className="btn btn-story"
+                     onClick={this.showPopup('isWritePop')}
+                  ><span className="tx">Write Story</span> </a>
+                  <a className="btn btn-upload"
+                     onClick={this.showPopup('isUploadPop')}><span className="tx">Upload</span> </a>
+                  <a className="btn btn-test"
+                     onClick={this.showPopup('isTestimonialPop')}><span className="tx">Testimonial</span> </a>
+                  <a className="btn btn-badge"
+                     onClick={this.showPopup('isBadgePop')}><span className="tx">Badge</span> </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -476,9 +480,11 @@ class ProfileCard extends Component {
             <div className="profile-details">
               <ProfilePicture imageSrc={$p.profileImgSrc}
                               imageAlt={$p.profileName}>
-                <a className="lnk send-request-lnk"
-                   onClick={this.showPopup('isNokPopup')}
-                >Send NOK Request</a>
+                {currentUser &&
+                  <a className="lnk send-request-lnk"
+                     onClick={this.showPopup('isNokPopup')}
+                  >Send NOK Request</a>
+                }
               </ProfilePicture>
               <div className="bar-basicinfo">
                 <div className="col col-name">
@@ -558,11 +564,13 @@ class ProfileCard extends Component {
                   }
                   </tbody>
                 </table>
-                <div className="action">
-                  <a className="btn btn-event"
-                     onClick={this.showPopup('isEventPop')}
-                  ><span className="ico">Event</span> </a>
-                </div>
+                {currentUser && (
+                  <div className="action">
+                    <a className="btn btn-event"
+                       onClick={this.showPopup('isEventPop')}
+                    ><span className="ico">Event</span> </a>
+                  </div>
+                )}
               </div>
 
             </div>

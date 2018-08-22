@@ -16,7 +16,6 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import {DEFAULT_PROFILE_DATA} from '../../config';
 import AuthService from "../../services/auth";
-import {Redirect} from "react-router-dom";
 
 const CONTENT_LIMIT = 4; // stories,photos,page limit
 
@@ -62,7 +61,6 @@ class Search extends Component {
   }
 
   onLoad() {
-    if (!AuthService.getCurrentUser()) return;
     this.props.dataAction.getData();
     /**
      * get veteran information
@@ -453,7 +451,6 @@ class Search extends Component {
     const { relatedProfiles, profileCard } = this.state;
     return (
       <div className="page-wrapper">
-        {!AuthService.getCurrentUser() && <Redirect to={'/'}/>}
         <MainHeaderComponent attr={{ notifications }}/>
 
         <main className="main">
