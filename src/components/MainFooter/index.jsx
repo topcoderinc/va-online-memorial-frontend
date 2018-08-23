@@ -37,7 +37,7 @@ const MainFooter = ({props}) => {
 
         <div className="gr-rt">
             <section className="footer-sn social-sn">
-              <h3>We Go Social</h3>
+              <h3>Connect With Us!</h3>
               <div className="bar-socl">
                 <a className="fb" href="https://www.facebook.com/NationalCemeteries"> </a>
                 <a className="gp"> </a>

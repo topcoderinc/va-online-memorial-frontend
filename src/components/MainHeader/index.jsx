@@ -289,7 +289,7 @@ class Masterhead extends Component {
       // send request to backend
       this.setState({ showSpinner: true });
       AuthService.register(body).then((user) => {
-        CommonService.showSuccess(`User with email ${user.email} register successful.`);
+        CommonService.showSuccess(`Success! We've registered your account using ${user.email}.`);
         this.setState({
           showSpinner: false,
         });
