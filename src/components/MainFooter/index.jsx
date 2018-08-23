@@ -18,7 +18,7 @@ const MainFooter = ({props}) => {
             </div>
           </section>
           <section className="footer-sn">
-            <h3>Quick Link</h3>
+            <h3>Quick Links</h3>
             <div className="links-list">
               {
                 !!props.quickLinks 
