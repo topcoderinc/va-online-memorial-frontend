@@ -405,10 +405,11 @@ function getFlags() {
 function deleteFlag(flagId, type, id) {
   return function (dispatch) {
     API.deleteFlag(flagId).then(() => {
-      API.deletePost(type, id).then(() => {});
-      API.getFlags().then((data) => {
-        dispatch(loadFlaggedPosts(data));
-        toast('remove post from page success', { type: 'info' });
+      API.deletePost(type, id).then(() => {
+        API.getFlags().then((data) => {
+          dispatch(loadFlaggedPosts(data));
+          toast('remove post from page success', { type: 'info' });
+        });
       });
     });
   }

@@ -101,6 +101,7 @@ class Search extends Component {
       cemeteryId: this.state.cemeteryId,
       division: this.state.division.trim(),
       served: this.state.served.trim(),
+      offset: this.state.offset || 0,
     };
     if (regExp.test(birthDate)) {
       filters.birthDateStart = birthDate;

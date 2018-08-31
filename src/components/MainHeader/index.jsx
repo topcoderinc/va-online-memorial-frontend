@@ -28,6 +28,7 @@ class Masterhead extends Component {
     this.showSearchPopup = this.showSearchPopup.bind(this);
     this.hideSearchPopup = this.hideSearchPopup.bind(this);
     this.stopPropagation = this.stopPropagation.bind(this);
+    this.handleLoginKeyEvent = this.handleLoginKeyEvent.bind(this);
     this.searchRequest = debounce(this.searchRequest, 500);
 
     this.state = {
@@ -78,6 +79,12 @@ class Masterhead extends Component {
     this.props.dataAction.getAllCemeteries();
     window.showLoginDialog = () => {
       this.props.uiAction.showLoginPopup();
+    }
+  }
+
+  handleLoginKeyEvent(e) {
+    if (e.key === 'Enter') {
+      this.login();
     }
   }
 
@@ -457,6 +464,7 @@ class Masterhead extends Component {
               <div className="r-val">
                 <input type="text" className={"textctrl " + (!!this.state.error.user ? 'error' : '')}
                        ref="user"
+                       onKeyPress={this.handleLoginKeyEvent}
                 />
               </div>
             </div>
@@ -465,6 +473,7 @@ class Masterhead extends Component {
               <div className="r-val">
                 <input type="password" className={"textctrl " + (!!this.state.error.pass ? 'error' : '')}
                        ref="pass"
+                       onKeyPress={this.handleLoginKeyEvent}
                 />
               </div>
             </div>

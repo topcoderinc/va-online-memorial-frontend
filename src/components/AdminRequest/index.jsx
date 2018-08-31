@@ -30,7 +30,7 @@ const AdminRequest = ({title, requests, archived, downloadFile, decline, approve
                   <div className="veteran-birth-death">{`${new Date(item.veteran[ 'birthDate' ]).getFullYear()} - ${new Date(item.veteran[ 'deathDate' ]).getFullYear()}`}</div>
                 </div>
               </div>
-              <NavLink to={`/dashboard/${item.id}`} className="btn">Veteran's Profile</NavLink>
+              <NavLink to={`/dashboard/${item.veteran.id}`} className="btn">Veteran's Profile</NavLink>
             </div>
             <div className="submitted-proof">
               <div className="proof-head">
