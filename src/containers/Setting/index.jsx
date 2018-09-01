@@ -25,7 +25,8 @@ class Setting extends Component {
     super(props);
     this.state = {
       activeMenu: props.admin ?
-        'User Management'//'Flagged Posts'
+        // 'User Management'
+        'Flagged Posts'
         :
         'Basic Details',
     };
@@ -203,6 +204,12 @@ class Setting extends Component {
       ]
     };
 
+
+    const adminProfile = {
+      title: 'Profile',
+      submenus: map(['Basic Details'],
+        t => ({id: t, title: t, onClick: () => this.activateMenu(t)}))
+    };
     const adminPostsMenu = {
       title: 'Posts',
       submenus: [
@@ -275,6 +282,10 @@ class Setting extends Component {
             {
               admin &&
               <div className={`setting-sidebar ${showMenu ? 'sidebar-show-menu' : ''}`} onClick={this.toggleMenu}>
+                <CascadeMenu
+                  item={adminProfile}
+                  activeIndex={map(adminProfile.submenus, 'id').indexOf(activeMenu)}
+                  className="setting-sidebar-menu"/>
                 <CascadeMenu
                   item={adminPostsMenu}
                   activeIndex={map(adminPostsMenu.submenus, 'id').indexOf(activeMenu)}

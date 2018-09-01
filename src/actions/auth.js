@@ -1,6 +1,7 @@
 import API from '../services/auth';
 import * as types from '../constants/actionTypes';
 import {toast} from 'react-toastify';
+import CommonService from "../services/common";
 
 /**
  * Check if user is athenticated
@@ -62,6 +63,8 @@ function updateProfile(id, profile) {
     API.updateProfile(id, profile).then(data => {
       dispatch(loadProfile(data));
       toast('Profile successfully updated.', { type: 'info' });
+    }).catch(err => {
+      toast(CommonService.getErrorMsg(err), {type: 'error'});
     });
   }
 }
