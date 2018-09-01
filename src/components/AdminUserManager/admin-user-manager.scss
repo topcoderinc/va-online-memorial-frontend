@@ -1,0 +1,232 @@
+@import '../../styles/_mixins.scss';
+
+.admin-user-manager {
+  &__title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    @include fontAlt;
+    span {
+      flex: 1;
+    }
+
+    @include viewMd {
+      font-size: 15px;
+    }
+    a {
+      width: 120px;
+    }
+  }
+
+  .no-records {
+    margin-top: 24px;
+  }
+
+  .search-input {
+    height: 40px;
+    border: 1px solid black;
+    padding-left: 8px;
+    width: 100%;
+    font-size: 18px;
+  }
+  .user-list {
+    .user-item {
+      margin-top: 12px;
+      border: 1px solid #444444;
+      padding: 16px 16px 0px;
+      .line {
+        display: flex;
+        margin-bottom: 12px;
+        flex-direction: row;
+        .item {
+          flex: 1;
+          .key {
+            font-size: 14px;
+            color: grey;
+            font-weight: bold;
+            margin-right: 6px;
+          }
+          .value {
+            color: black;
+            font-size: 18px;
+          }
+        }
+
+        &.btns {
+          margin-top: 16px;
+          justify-content: flex-end;
+          margin-bottom: 10px;
+        }
+        .btn {
+          margin-left: 6px;
+          margin-right: 6px;
+        }
+      }
+    }
+  }
+
+  .popup-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    min-height: 500px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    overflow: auto;
+    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.2);
+    align-items: center;
+    justify-content: center;
+    display: none;
+
+    &.on {
+      display: flex;
+    }
+
+    // popup
+    .popup {
+      padding: 36px 48px 41px;
+      width: 455px;
+      min-height: 546px;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 6px 16px 0 hsla(0, 0%, 0%, 0.4);
+      position: relative;
+
+      .close {
+        position: absolute;
+        right: 48px;
+        top: 46px;
+        width: 17px;
+        height: 17px;
+        background: url('../../i/xb.png') 0 0 no-repeat;
+        background-size: 17px;
+
+        @include hover;
+
+        @include viewMd {
+          top: 25px;
+          right: 35px;
+        }
+      }
+
+      header {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #000000;
+        height: 36px;
+        line-height: 38px;
+        @include viewMd {
+          height: auto;
+          min-height: 20px;
+          line-height: 20px;
+          font-size: 15px;
+          border-bottom: 1px solid #000;
+          padding-bottom: 26px;
+        }
+      }
+
+      .fm {
+        margin-top: 24px;
+        .buttons {
+          display: flex;
+        }
+        .input-line {
+          display: flex;
+          flex-direction: column;
+          margin-top: 16px;
+          .title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+          }
+          .input {
+            border: 1px solid black;
+            padding-left: 16px;
+            padding-right: 16px;
+            height: 34px;
+            width: 360px;
+          }
+
+          @include viewMd {
+            .input {
+              width: auto;
+            }
+          }
+        }
+      }
+
+      .flex1 {
+        flex: 1
+      }
+
+      .actions {
+        &.fx {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 30px;
+
+          .btn {
+            width: 129px;
+
+            &.btn-clear {
+              border: solid 2px #0f73ba;
+              color: #0f73ba;
+              line-height: 36px;
+            }
+            &.btn-md {
+              width: 163px;
+            }
+            &.btn-disabled {
+              opacity: 0.5;
+            }
+          }
+        }
+
+        @include viewMd {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 22px 0;
+          margin: 0 25px;
+          border-top: 1px solid #000;
+
+          &.fx {
+            .btn {
+              height: 35px;
+              line-height: 35px;
+              width: 105px;
+
+              &.btn-clear {
+                border-radius: 2.5px;
+                line-height: 33px;
+                border: solid 1px #0f73ba;
+              }
+            }
+          }
+        }
+      }
+      .actions.spaced-lg {
+        margin-top: 82px;
+      }
+      @include viewMd {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: auto;
+        height: auto;
+        padding: 25px;
+      }
+    }
+  }
+}

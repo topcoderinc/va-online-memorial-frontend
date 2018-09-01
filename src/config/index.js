@@ -10,8 +10,8 @@
  * variable, which is commented out below, does not work at Heroku. Most
  * probably, there is something wrong with configuration of the build
  * procedure. */
- export const API_URL = 'https://rest-api.app.cloud.gov/api';
-//export const API_URL = 'http://localhost:4000/api';
+ // export const API_URL = 'https://rest-api.app.cloud.gov/api';
+export const API_URL = 'http://localhost:4000/api';
 
 /*
 'http://localhost:4000/api'
@@ -27,6 +27,7 @@ export const META = {
 export const DEFAULT_SERVER_ERROR = 'There was an error processing your request.';
 
 export const VETERAN_NAME_LIMIT = 30;
+export const DEAULT_USER_LIMIT = 10;
 
 export const DEFAULT_PROFILE_DATA = {
   acceptedProof: "Please provide next-of-kin information (name, relationship to the deceased, phone number, email address). No Personal Identifiable Information, please (birthdates, social security numbers, etc). If a cemetery has already established your NOK designation, and you have proof of this, you can include that documentation as well.",

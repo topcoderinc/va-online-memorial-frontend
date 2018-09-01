@@ -56,7 +56,7 @@ const clearInvalidParams = (query) => {
 };
 
 export default class APIService {
-  
+
   /**
    * get veteran by id
    * @param id the veteran id
@@ -69,7 +69,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get relate veteran by id
    * @param id the veteran id
@@ -82,7 +82,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get event types
    */
@@ -94,7 +94,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get badge types
    */
@@ -106,7 +106,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get veteran events
    * @param id the veteran id
@@ -119,7 +119,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * create event for veteran
    * @param entity the event entity
@@ -133,7 +133,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * create testimonial for veteran
    * @param entity the testimonial entity
@@ -147,7 +147,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * create story for veteran
    * @param entity the story entity
@@ -161,7 +161,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * create badges
    * @param entity the badge entity
@@ -175,7 +175,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * upload photo to server
    * @param file the file entity
@@ -188,7 +188,7 @@ export default class APIService {
     formData.append('file', file);
     formData.append('status', 'Requested');
     formData.append('title', title);
-    
+
     return request
       .post(`${FALLBACK_API_URL}/v1/photos`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
@@ -197,7 +197,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get stories
    * @param query the query entity
@@ -317,7 +317,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get all branches
    */
@@ -329,7 +329,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get all cemeteries
    */
@@ -341,7 +341,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * create next Of Kin
    * @param files the proof files
@@ -360,7 +360,7 @@ export default class APIService {
     formData.append('userId', userId);
     formData.append('email', email);
     formData.append('fullName', fullName);
-    
+
     return request
       .post(`${FALLBACK_API_URL}/v1/nextOfKins`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
@@ -370,7 +370,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get submitted next of kin request
    * @param query query object
@@ -384,7 +384,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   static deleteNOKRequest(id) {
     return request
       .del(`${FALLBACK_API_URL}/v1/nextOfKins/${id}`)
@@ -394,7 +394,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get preferences setting
    */
@@ -406,7 +406,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * update preferences
    * @param preferences
@@ -421,7 +421,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * create new flag
    * @param entity the flag entity
@@ -435,7 +435,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * decline post by id
    * @param id post id
@@ -449,7 +449,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * approve post by id
    * @param id post id
@@ -463,7 +463,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * approve NOK request by id
    * @param id
@@ -477,7 +477,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * decline NOK request by id
    * @param id
@@ -492,7 +492,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * get flags
    */
@@ -501,10 +501,56 @@ export default class APIService {
       .get(`${FALLBACK_API_URL}/v1/flags`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
       .use(errorRedirect)
+      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }
-  
+
+  /**
+   * get users
+   */
+  static getUsers(query) {
+    return request
+      .get(`${FALLBACK_API_URL}/v1/users`)
+      .query(query || {})
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
+      .use(errorRedirect)
+      .end()
+      .then((res) => res.body);
+  }
+
+  /**
+   * update user
+   * @param id the user id
+   * @param body the user body
+   */
+  static updateUser(id, body) {
+    return request
+      .put(`${FALLBACK_API_URL}/v1/users/${id}`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .send(body)
+      .use(CommonService.progressInterceptor)
+      .use(errorRedirect)
+      .end()
+      .then((res) => res.body);
+  }
+
+  /**
+   * create user
+   * @param body the user body
+   */
+  static createUser(body) {
+    return request
+      .post(`${FALLBACK_API_URL}/v1/users`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .send(body)
+      .use(CommonService.progressInterceptor)
+      .use(errorRedirect)
+      .end()
+      .then((res) => res.body);
+  }
+
   static deleteFlag(id) {
     return request
       .del(`${FALLBACK_API_URL}/v1/flags/${id}`)
@@ -513,7 +559,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * delete post by type and id
    * @param type post type
@@ -527,7 +573,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * download file by url
    * @param url
@@ -543,7 +589,7 @@ export default class APIService {
         return res.xhr;
       });
   }
-  
+
   /**
    * check is isSaluted
    * @param type the post type
@@ -557,7 +603,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * salute post
    * @param type the type
@@ -571,7 +617,7 @@ export default class APIService {
       .end()
       .then((res) => res.body);
   }
-  
+
   /**
    * share post
    * @param type the type

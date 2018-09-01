@@ -13,7 +13,8 @@ const defaultState = {
   reviewPosts: {},
   myPosts: {},
   flaggedPosts: {},
-  veteranNames: {}
+  veteranNames: {},
+  users: {},
 };
 
 
@@ -43,6 +44,11 @@ export default (state = defaultState, action) => {
       return {
         ...state,
         cemeteries: action.data
+      };
+    case types.LOAD_USERS:
+      return {
+        ...state,
+        users: action.data,
       };
     case types.UPDATE_FILTERS:
       return {
