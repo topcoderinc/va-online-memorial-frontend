@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {map, get} from 'lodash';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { map, get } from 'lodash';
 import dataAction from '../../actions/dataAction';
 import actions from '../../actions/auth';
 import MainHeaderComponent from '../../components/MainHeader';
@@ -14,16 +14,21 @@ import SettingPosts from '../../components/SettingPosts';
 import AdminPosts from '../../components/AdminPosts';
 import AdminRequest from '../../components/AdminRequest';
 import AdminUsers from '../../components/AdminUsers';
-import {NavLink, Redirect} from 'react-router-dom';
-import {VETERAN_NAME_LIMIT, DEFAULT_PROFILE_DATA} from "../../config";
+import { NavLink, Redirect } from 'react-router-dom';
+import { VETERAN_NAME_LIMIT, DEFAULT_PROFILE_DATA, DEAULT_USER_LIMIT } from "../../config";
 import AuthService from "../../services/auth";
 import './setting.scss';
+import AdminUserManager from "../../components/AdminUserManager";
 
 class Setting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeMenu: props.admin ? 'Flagged Posts' : 'Basic Details',
+      activeMenu: props.admin ?
+        // 'User Management'
+        'Flagged Posts'
+        :
+        'Basic Details',
     };
     this.updateBaseProfile = this.updateBaseProfile.bind(this);
     this.deactivate = this.deactivate.bind(this);
@@ -47,13 +52,14 @@ class Setting extends Component {
       this.props.dataAction.getData();
       if (currentUser.role !== 'admin') {
         this.props.dataAction.getPreferences();
-        this.props.dataAction.getNOKRequests({ userId: currentUser.id });
+        this.props.dataAction.getNOKRequests({userId: currentUser.id});
         this.props.dataAction.getMyPosts();
         this.props.dataAction.getReviewPosts();
-        this.props.dataAction.getVeteransName({ limit: VETERAN_NAME_LIMIT });
+        this.props.dataAction.getVeteransName({limit: VETERAN_NAME_LIMIT});
       } else {
-        this.props.dataAction.getNOKReviewRequests({ status: 'Requested' });
-        this.props.dataAction.getNOKArchivedRequests({ status: 'Approved' });
+        this.props.dataAction.getNOKReviewRequests({status: 'Requested'});
+        this.props.dataAction.getNOKArchivedRequests({status: 'Approved'});
+        this.props.dataAction.getUsers({limit: DEAULT_USER_LIMIT});
         this.props.dataAction.getFlags();
       }
     }
@@ -107,14 +113,14 @@ class Setting extends Component {
    * @param veteranId the veteran id
    */
   createNokRequest(files, veteranId) {
-    const { user } = this.props;
+    const {user} = this.props;
     this.props.dataAction.createNextOfKin(files, user.id, veteranId, user.username, user.email);
   }
 
   updatePost() {
     const currentUser = AuthService.getCurrentUser();
-    this.props.dataAction.getMyPosts({ userId: currentUser.id, status: 'Requested' });
-    this.props.dataAction.getReviewPosts({ status: 'Requested', review: true });
+    this.props.dataAction.getMyPosts({userId: currentUser.id, status: 'Requested'});
+    this.props.dataAction.getReviewPosts({status: 'Requested', review: true});
   }
 
   /**
@@ -176,14 +182,14 @@ class Setting extends Component {
   }
 
   render() {
-    const { admin, db, user, settingPreferences, nokRequests, veteranNames, myPosts, reviewPosts, archivedRequests, reviewRequests, flagged } = this.props;
+    const {admin, db, user, users, settingPreferences, nokRequests, veteranNames, myPosts, reviewPosts, archivedRequests, reviewRequests, flagged} = this.props;
 
-    const { footerLinks, feedback, faqs, notifications, adminUsers } = db;
+    const {footerLinks, feedback, faqs, notifications, adminUsers} = db;
 
     const profileMenu = {
       title: 'Profile',
-      submenus: map([ 'Basic Details', 'NOK Request', 'Notification Preferences' ],
-        t => ({ id: t, title: t, onClick: () => this.activateMenu(t) }))
+      submenus: map(['Basic Details', 'NOK Request', 'Notification Preferences'],
+        t => ({id: t, title: t, onClick: () => this.activateMenu(t)}))
     };
 
     const postsMenu = {
@@ -194,42 +200,50 @@ class Setting extends Component {
           title: `For Review (${reviewPosts.total || 0})`,
           onClick: () => this.activateMenu('For Review')
         },
-        { id: 'By You', title: `By You (${myPosts.total || 0})`, onClick: () => this.activateMenu('By You') },
+        {id: 'By You', title: `By You (${myPosts.total || 0})`, onClick: () => this.activateMenu('By You')},
       ]
     };
 
+
+    const adminProfile = {
+      title: 'Profile',
+      submenus: map(['Basic Details'],
+        t => ({id: t, title: t, onClick: () => this.activateMenu(t)}))
+    };
     const adminPostsMenu = {
       title: 'Posts',
       submenus: [
-        { id: 'Flagged Posts', title: 'Flagged', onClick: () => this.activateMenu('Flagged Posts') },
-        { id: 'Removed Posts', title: 'Removed', onClick: () => this.activateMenu('Removed Posts') },
+        {id: 'Flagged Posts', title: 'Flagged', onClick: () => this.activateMenu('Flagged Posts')},
+        {id: 'Removed Posts', title: 'Removed', onClick: () => this.activateMenu('Removed Posts')},
       ]
     };
 
     const adminRequestMenu = {
       title: 'NOK Request',
       submenus: [
-        { id: 'Request For Review', title: 'For Review', onClick: () => this.activateMenu('Request For Review') },
-        { id: 'Archived Request', title: 'Archived', onClick: () => this.activateMenu('Archived Request') },
+        {id: 'Request For Review', title: 'For Review', onClick: () => this.activateMenu('Request For Review')},
+        {id: 'Archived Request', title: 'Archived', onClick: () => this.activateMenu('Archived Request')},
       ]
     };
 
     const adminUsersMenu = {
       title: 'Users',
       submenus: [
-        { id: 'Usage Dashboard', title: 'Usage Dashboard', onClick: () => this.activateMenu('Usage Dashboard') },
-        { id: 'Joined This Month', title: 'Joined This Month', onClick: () => this.activateMenu('Joined This Month') },
+        {id: 'User Management', title: 'User Management', onClick: () => this.activateMenu('User Management')},
+        {id: 'Usage Dashboard', title: 'Usage Dashboard', onClick: () => this.activateMenu('Usage Dashboard')},
+        {id: 'Joined This Month', title: 'Joined This Month', onClick: () => this.activateMenu('Joined This Month')},
       ]
     };
 
-    const { activeMenu, showMenu } = this.state;
+    const {activeMenu, showMenu} = this.state;
 
     return (
       <div className="page-wrapper setting-page">
 
         {!AuthService.getCurrentUser() && <Redirect to={'/'}/>}
-        <MainHeaderComponent attr={ { userName: user ? user.username : '', notifications: notifications, nok: nokRequests} } />
-          <main className="main">
+        <MainHeaderComponent
+          attr={{userName: user ? user.username : '', notifications: notifications, nok: nokRequests}}/>
+        <main className="main">
           <div className="welcome-banner">
             <div className="viewport">
               <div
@@ -268,6 +282,10 @@ class Setting extends Component {
             {
               admin &&
               <div className={`setting-sidebar ${showMenu ? 'sidebar-show-menu' : ''}`} onClick={this.toggleMenu}>
+                <CascadeMenu
+                  item={adminProfile}
+                  activeIndex={map(adminProfile.submenus, 'id').indexOf(activeMenu)}
+                  className="setting-sidebar-menu"/>
                 <CascadeMenu
                   item={adminPostsMenu}
                   activeIndex={map(adminPostsMenu.submenus, 'id').indexOf(activeMenu)}
@@ -329,12 +347,18 @@ class Setting extends Component {
               }
               {
                 activeMenu === 'Archived Request' &&
-                <AdminRequest title="Next of Kin Request for : Archived" requests={archivedRequests.items} downloadFile={this.downloadFile} archived/>
+                <AdminRequest title="Next of Kin Request for : Archived" requests={archivedRequests.items}
+                              downloadFile={this.downloadFile} archived/>
               }
               {
                 activeMenu === 'Usage Dashboard' &&
                 <AdminUsers title="Users: Usage Dashboard" statis={get(adminUsers, 'statis')}
                             trends={get(adminUsers, 'totalTrends')} totalColor={get(adminUsers, 'totalColor')}/>
+              }
+              {
+                activeMenu === 'User Management' &&
+                <AdminUserManager users={users}
+                                  onSearch={this.props.dataAction.getUsers}/>
               }
               {
                 activeMenu === 'Joined This Month' &&
@@ -344,7 +368,7 @@ class Setting extends Component {
               }
             </div>
           </div>
-          <MainFooter props={{ ...footerLinks, ...feedback, addClass: 'setting-footer' }}/>
+          <MainFooter props={{...footerLinks, ...feedback, addClass: 'setting-footer'}}/>
         </main>
       </div>
     )
@@ -364,8 +388,8 @@ const mapStateToProps = (state) => {
 
 const matchDispatchToProps = (dispatch) => {
   return {
-    actions: bindActionCreators({ ...actions }, dispatch),
-    dataAction: bindActionCreators({ ...dataAction }, dispatch)
+    actions: bindActionCreators({...actions}, dispatch),
+    dataAction: bindActionCreators({...dataAction}, dispatch)
   }
 };
 

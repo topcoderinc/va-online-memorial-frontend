@@ -55,6 +55,10 @@ textarea {
     background-color: #0f73ba;
     display: inline-block;
   }
+
+  &.btn-red {
+    background-color: #ff6334;
+  }
   &.btn-clear {
     width: 100px;
     height: 40px;

@@ -241,9 +241,10 @@ class Masterhead extends Component {
   logout() {
     AuthService.logout();
     this.props.authAction.logout();
+    this.setState({logger: {}});
     setTimeout(() => {
-      this.setState({ logger: {}, redirectTo: '/' });
-    }, 100);
+      this.setState({logger: {}, redirectTo: '/'});
+    }, 200);
   }
 
   /**

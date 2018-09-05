@@ -97,6 +97,11 @@ function loadFlaggedPosts(data) {
   return { type: types.LOAD_FLAGGED_POSTS, data: handleFlaggedPosts(data) };
 }
 
+// load users
+function loadUsers(data) {
+  return {type: types.LOAD_USERS, data};
+}
+
 // get data
 function getData() {
   return function (dispatch) {
@@ -396,6 +401,20 @@ function getFlags() {
 }
 
 /**
+ * get users
+ * @param query the query of users
+ */
+function getUsers(query) {
+  return function (dispatch) {
+    API.getUsers(query).then((data) => {
+      dispatch(loadUsers(data));
+    }).catch(e => {
+      console.error(e);
+    });
+  }
+}
+
+/**
  * remove flagged post
  * @param flagId flag id
  * @param type post type
@@ -450,6 +469,7 @@ function downloadFile(file) {
 export default {
   getData,
   loadData,
+  getUsers,
   searchVeterans,
   getAllBranches,
   getAllCemeteries,

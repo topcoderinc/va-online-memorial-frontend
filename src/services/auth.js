@@ -4,16 +4,31 @@ import superagentPromise from 'superagent-promise';
 import {
   API_URL as FALLBACK_API_URL
 } from '../config';
-import Cookies from 'universal-cookie';
-import CommonService from "./common";
-import {assign} from 'lodash';
 
-const cookies = new Cookies();
+import CommonService from "./common";
+import { assign } from 'lodash';
+
+const localDB = {};
 const request = superagentPromise(superagent, Promise);
 const USER_STORE_KEY = 'userDetails';
 
+localDB.get = (key) => {
+  try {
+    return JSON.parse(localStorage.getItem(key));
+  } catch (e) {
+    return {};
+  }
+};
+
+localDB.set = (key, v) => {
+  localStorage.setItem(key, v);
+};
+
+localDB.remove = (key) => {
+  localStorage.removeItem(key);
+};
 export default class AuthService {
-  
+
   /**
    * Login
    * @param credentials {object} - the login credentials
@@ -25,11 +40,12 @@ export default class AuthService {
       .use(CommonService.progressInterceptor)
       .end()
       .then((res) => {
-        cookies.set(USER_STORE_KEY, JSON.stringify(res.body));
+        localDB.remove(USER_STORE_KEY);
+        localDB.set(USER_STORE_KEY, JSON.stringify(res.body));
         return res.body;
       });
   }
-  
+
   /**
    * Register user
    * @param body {object} - the user details object
@@ -44,24 +60,24 @@ export default class AuthService {
         return res.body;
       });
   }
-  
+
   /**
    * check if user is already logged in
    */
   static getAccessToken() {
     const user = this.getCurrentUser();
     if (user) {
-      return user[ 'accessToken' ];
+      return user['accessToken'];
     } else {
       CommonService.getBrowserHistory().push('/')
     }
   }
-  
+
   /**
    * check auth is vaild
    */
   static checkAuthIsVaild() {
-    const userDetails = cookies.get(USER_STORE_KEY);
+    const userDetails = localDB.get(USER_STORE_KEY);
     if (!userDetails || !userDetails.accessToken || !userDetails.accessTokenExpiresAt) return false;
     return new Date(userDetails.accessTokenExpiresAt) > new Date();
   }
@@ -70,14 +86,14 @@ export default class AuthService {
    * get current logged user
    */
   static getCurrentUser() {
-    return this.checkAuthIsVaild() ? cookies.get(USER_STORE_KEY) : null;
+    return this.checkAuthIsVaild() ? localDB.get(USER_STORE_KEY) : null;
   }
-  
+
   /**
    * logout system
    */
   static logout() {
-    cookies.remove(USER_STORE_KEY);
+    localDB.remove(USER_STORE_KEY);
   }
 
   /**
@@ -94,7 +110,7 @@ export default class AuthService {
       .end()
       .then((res) => {
         console.log(res.body);
-        cookies.set(USER_STORE_KEY, JSON.stringify(assign(cookies.get(USER_STORE_KEY), res.body)));
+        localDB.set(USER_STORE_KEY, JSON.stringify(assign(localDB.get(USER_STORE_KEY), res.body)));
         return res.body;
       });
   }
