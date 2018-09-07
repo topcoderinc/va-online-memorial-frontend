@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { map, get } from 'lodash';
+import { map, get, filter } from 'lodash';
 import dataAction from '../../actions/dataAction';
 import actions from '../../actions/auth';
 import MainHeaderComponent from '../../components/MainHeader';
@@ -57,7 +57,7 @@ class Setting extends Component {
       this.props.dataAction.getData();
       if (currentUser.role !== 'admin') {
         this.props.dataAction.getPreferences();
-        this.props.dataAction.getNOKRequests({userId: currentUser.id, status: 'Approved'});
+        this.props.dataAction.getNOKRequests({userId: currentUser.id});
         this.props.dataAction.getMyPosts();
         this.props.dataAction.getReviewPosts();
         this.props.dataAction.getVeteransName({limit: VETERAN_NAME_LIMIT});
@@ -117,10 +117,11 @@ class Setting extends Component {
    * create nok request
    * @param files the reqest files
    * @param veteranId the veteran id
+   * @package the success callback
    */
-  createNokRequest(files, veteranId) {
+  createNokRequest(files, veteranId, cb) {
     const {user} = this.props;
-    this.props.dataAction.createNextOfKin(files, user.id, veteranId, user.username, user.email);
+    this.props.dataAction.createNextOfKin(files, user.id, veteranId, user.username, user.email, cb);
   }
 
   updatePost() {
@@ -275,7 +276,7 @@ class Setting extends Component {
                   activeIndex={map(postsMenu.submenus, 'id').indexOf(activeMenu)}
                   className="setting-sidebar-menu"/>
                 {
-                  map(nokRequests.items, item => {
+                  map(filter(nokRequests.items, item => item.status === 'Approved'), item => {
                     return (
                       <NavLink key={item.id} to={`/dashboard/${item.veteran.id}`}
                                className={`setting-sidebar-link ${map(profileMenu.submenus, 'id').indexOf(activeMenu) > -1 ? 'active' : ''}`}>

@@ -78,7 +78,6 @@ export default class APIService {
     return request
       .get(`${FALLBACK_API_URL}/v1/veterans/${id}/related`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
-      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }
@@ -314,6 +313,7 @@ export default class APIService {
       .get(`${FALLBACK_API_URL}/v1/veterans`)
       .query(clearInvalidParams(query))
       .use(errorRedirect)
+      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }

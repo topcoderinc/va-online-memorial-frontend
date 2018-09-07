@@ -216,15 +216,19 @@ function updatePreferences(preferences) {
  * @param veteranId veteran id
  * @param fullName user full name
  * @param email user email
+ * @param cb the success callback
  * @returns {Function}
  */
-function createNextOfKin(files, userId, veteranId, fullName, email) {
+function createNextOfKin(files, userId, veteranId, fullName, email, cb) {
   return function (dispatch) {
     API.createNextOfKin(files, userId, veteranId, fullName, email).then(() => {
-      API.getNOKRequests({ userId }).then(data => {
+      setTimeout(() => API.getNOKRequests({userId}).then(data => {
         dispatch(loadNOKRequests(data));
-      });
+      }), 10);
       toast('request send success, please wait for review', { type: 'info' });
+      if (cb) {
+        cb();
+      }
     }).catch(err => {
       toast(CommonService.getErrorMsg(err), {type: 'error'});
     });
@@ -240,6 +244,7 @@ function createNextOfKin(files, userId, veteranId, fullName, email) {
 function deleteNOKRequest(userId, id) {
   return function (dispatch) {
     API.deleteNOKRequest(id).then(() => {
+      toast('Delete Nok success', { type: 'info' });
       API.getNOKRequests({ userId }).then(data => {
         dispatch(loadNOKRequests(data));
       });

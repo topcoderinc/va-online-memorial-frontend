@@ -153,6 +153,7 @@ class Search extends Component {
   render() {
     const { footerLinks, feedback, notifications } = { ...this.props.db };
     const { veterans, branches, cemeteries } = this.props;
+    const isEmptySearchKey = this.state.keyword === '';
 
     return (
       <div className="page-wrapper">
@@ -274,9 +275,9 @@ class Search extends Component {
                 {veterans.items && veterans.items.length > 0
                   ? (
                     <div>
-                      <h3 className="fx"><span><span className="count"> {veterans.total}</span> Results for  <span
-                        className='keyword'>“{this.state.keyword}”</span></span>
-
+                      <h3 className="fx">
+                        <span><span className="count"> {veterans.total}</span> Results {isEmptySearchKey ? '' : 'For '}
+                          <span className='keyword'>{isEmptySearchKey ? '' : ` “${this.state.keyword}”`}</span></span>
                         <a
                           onClick={this.toggleFilter}
                           className="btn btn-filter">Filter</a>
@@ -290,7 +291,7 @@ class Search extends Component {
                       }}/>
                     </div>
                   )
-                  : (<h3>Search Results</h3>)
+                  : (<h3>{!veterans.items ? 'Search Results' : 'No Result(s) found'}</h3>)
                 }
               </div>
             </div>

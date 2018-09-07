@@ -375,6 +375,7 @@ class Masterhead extends Component {
     const {veterans, branches, cemeteries, notifications, nokRequests, ui, uiAction} = this.props;
     const nok = this.state.logger.role !== 'admin' && CommonService.isNok(nokRequests);
 
+    const isEmptySearchKey = this.state.keywordForResults === '';
 
     const renderNotification = (i, n) => {
       const getText = () => {
@@ -717,18 +718,20 @@ class Masterhead extends Component {
                 <div className="col col-result">
                   {veterans.items && veterans.items.length > 0
                     ? (<div>
-                        <h3><span className="count"> {veterans.total} </span> Results for <span
-                          className='keyword'>“{this.state.keywordForResults}”</span></h3>
+                        <h3><span className="count"> {veterans.total} </span> Results {isEmptySearchKey?'':'For '}
+                          <span className='keyword'>
+                            {isEmptySearchKey?'':` "${this.state.keywordForResults}"`}</span>
+                        </h3>
                         <SearchTable attr={{
-                          keyword: this.state.keyword, searchedResults: veterans.items,
+                          keyword: this.state.keywordForResults, searchedResults: veterans.items,
                           limit: this.props.filters.limit || 10,
                           total: veterans.total,
-                          addClass: (!!this.state.keyword ? 'on' : '')
+                          addClass: (!!this.state.keywordForResults ? 'on' : '')
                         }}
                         />
                       </div>
                     )
-                    : (<h3>Search Results</h3>)
+                    : (<h3>{!veterans.items ? 'Search Results' : 'No Result(s) found'}</h3>)
                   }
                 </div>
               </div>
