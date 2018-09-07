@@ -37,7 +37,7 @@ export default class CommonService {
   static getErrorMsg(err) {
 
     if (!err || !err.response) {
-      return "Network can not reachable, please check."
+      return "Network cannot be reached."
     }
 
     const body = err.response.body;
