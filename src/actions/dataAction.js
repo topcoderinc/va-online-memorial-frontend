@@ -5,6 +5,7 @@ import AuthService from "../services/auth";
 import fileSaver from 'file-saver';
 import {toast} from 'react-toastify';
 import {map, assign, each, keys, lowerCase, cloneDeep} from 'lodash';
+import CommonService from "../services/common";
 
 /**
  * handle flagged to match frontend structure
@@ -77,6 +78,9 @@ function loadMyPosts(data) {
   return { type: types.LOAD_MY_POSTS, data };
 }
 
+function loadNotifications(data) {
+  return {type: types.LOAD_NOTIFICATIONS, data};
+}
 // load review posts
 function loadReviewPosts(data) {
   return { type: types.LOAD_REVIEW_POSTS, data };
@@ -221,6 +225,8 @@ function createNextOfKin(files, userId, veteranId, fullName, email) {
         dispatch(loadNOKRequests(data));
       });
       toast('request send success, please wait for review', { type: 'info' });
+    }).catch(err => {
+      toast(CommonService.getErrorMsg(err), {type: 'error'});
     });
   }
 }
@@ -369,7 +375,9 @@ function approveRequest(id) {
   return function (dispatch) {
     API.approveRequest(id).then(() => {
       updateRequest(dispatch);
-      toast('approve success', { type: 'info' });
+      toast('approve success', {type: 'info'});
+    }).catch(err => {
+      toast(CommonService.getErrorMsg(err), {type: 'error'});
     });
   };
 }
@@ -466,6 +474,13 @@ function downloadFile(file) {
   }
 }
 
+
+function searchNotifications(query) {
+  return function (dispatch) {
+    API.searchNotifications(query).then(data => dispatch(loadNotifications(data)));
+  }
+}
+
 export default {
   getData,
   loadData,
@@ -474,6 +489,7 @@ export default {
   getAllBranches,
   getAllCemeteries,
   resetFilter,
+  searchNotifications,
   getPreferences,
   updatePreferences,
   createNextOfKin,
