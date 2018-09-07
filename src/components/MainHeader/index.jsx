@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {NavLink, Link, Redirect} from 'react-router-dom';
+import React, { Component } from 'react';
+import { NavLink, Link, Redirect } from 'react-router-dom';
 import Toggler from '../../components/Toggler';
 import SearchTable from '../../components/SearchTable';
-import {Scrollbars} from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars';
 import './styles.scss';
 import AuthService from "../../services/auth";
 import CommonService from "../../services/common";
@@ -10,9 +10,16 @@ import Spinner from '../Spinner';
 import dataAction from '../../actions/dataAction';
 import authAction from '../../actions/auth';
 import uiAction from '../../actions/ui';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {debounce, extend, map, isEmpty} from 'lodash';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { debounce, extend, map, isEmpty } from 'lodash';
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
+import API from "../../services/api";
+
+// Add locale-specific relative date/time formatting rules.
+TimeAgo.locale(en);
+const timeAgo = new TimeAgo('en-US');
 
 class Masterhead extends Component {
   constructor(props) {
@@ -41,6 +48,7 @@ class Masterhead extends Component {
       showSpinner: false,
       isNotiPopupActive: false,
       redirectTo: null,
+      redirectSearch: '',
       // filters
       branchId: props.filters.branchIds || '0',
       squadronShip: props.filters.squadronShip || '',
@@ -61,10 +69,10 @@ class Masterhead extends Component {
     return () => {
       if (!!delay) {
         window.setTimeout(() => {
-          this.setState({ ...attr });
+          this.setState({...attr});
         }, delay)
       } else {
-        this.setState({ ...attr });
+        this.setState({...attr});
       }
     }
   }
@@ -72,8 +80,9 @@ class Masterhead extends Component {
   componentWillMount() {
     const currentUser = AuthService.getCurrentUser();
     if (currentUser) {
-      this.setState({ logger: currentUser });
+      this.setState({logger: currentUser});
       this.props.authAction.checkAuth(currentUser);
+      this.props.dataAction.searchNotifications(); // get notifications
     }
     this.props.dataAction.getAllBranches();
     this.props.dataAction.getAllCemeteries();
@@ -140,8 +149,8 @@ class Masterhead extends Component {
   // state update function
   handleChange(key, value) {
     const state = this.state;
-    state[ key ] = value;
-    state[ 'offset' ] = 0;
+    state[key] = value;
+    state['offset'] = 0;
     this.setState(state);
     this.searchRequest();
   }
@@ -160,8 +169,8 @@ class Masterhead extends Component {
 
   handleBirthDateChange(key, value) {
     const state = this.state;
-    state[ key ] = value;
-    state[ 'offset' ] = 0;
+    state[key] = value;
+    state['offset'] = 0;
     this.setState(state, () => {
       const birthDate = `${this.state.birthDateYear}-${this.zeroFill(this.state.birthDateMonth)}-${this.zeroFill(this.state.birthDateDay)}`;
       const reg = /^(?:19|20)[0-9][0-9]-(?:(?:0[1-9])|(?:1[0-2]))-(?:(?:[0-2][1-9])|(?:[1-3][0-1]))$/;
@@ -174,8 +183,8 @@ class Masterhead extends Component {
 
   handleDeathDateChange(key, value) {
     const state = this.state;
-    state[ key ] = value;
-    state[ 'offset' ] = 0;
+    state[key] = value;
+    state['offset'] = 0;
     this.setState(state, () => {
       const deathDate = `${this.state.deathDateYear}-${this.zeroFill(this.state.deathDateMonth)}-${this.zeroFill(this.state.deathDateDay)}`;
       const reg = /^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
@@ -215,14 +224,15 @@ class Masterhead extends Component {
     });
 
     if (isValid) {
-      this.setState({ showSpinner: true });
-      AuthService.login({ email: user.value, password: pass.value }).then(user => {
+      this.setState({showSpinner: true});
+      AuthService.login({email: user.value, password: pass.value}).then(user => {
         this.setState({
           logger: user,
           showSpinner: false,
         });
         this.props.uiAction.hideLoginPopup();
         this.props.authAction.login(user);
+        this.props.dataAction.searchNotifications();
       }).catch(err => {
         error.user = true;
         error.pass = true;
@@ -295,7 +305,7 @@ class Masterhead extends Component {
         gender: '',
       };
       // send request to backend
-      this.setState({ showSpinner: true });
+      this.setState({showSpinner: true});
       AuthService.register(body).then((user) => {
         CommonService.showSuccess(`Success! We've sent a verification email to ${user.email}.`);
         this.setState({
@@ -317,7 +327,7 @@ class Masterhead extends Component {
   }
 
   // renderThumb
-  renderThumb({ style, ...props }) {
+  renderThumb({style, ...props}) {
     const thumbStyle = {
       backgroundColor: `rgb(0,0,0)`,
       width: `6px`,
@@ -326,7 +336,7 @@ class Masterhead extends Component {
 
     return (
       <div
-        style={{ ...style, ...thumbStyle }}
+        style={{...style, ...thumbStyle}}
         {...props} />
     )
   }
@@ -351,33 +361,79 @@ class Masterhead extends Component {
     return function (e) {
       // ignore clicks on the component itself
       if ((e.toElement || e.target).classList.contains('search-input')
-        || (document.querySelector('.search-modal') && document.querySelector('.search-modal').contains(e.target))) {
+        || (document.querySelector('.search-modal') && document.querySelector('.search-modal').contains(e.target)))
+      {
         return;
       }
       nodeEl.hideSearchPopup();
     }
   }
 
+
   render() {
-    const { notifications, addClass, userName } = this.props.attr;
-    const { veterans, branches, cemeteries, nokRequests, ui, uiAction } = this.props;
+    const {addClass, userName} = this.props.attr;
+    const {veterans, branches, cemeteries, notifications, nokRequests, ui, uiAction} = this.props;
     const nok = this.state.logger.role !== 'admin' && CommonService.isNok(nokRequests);
-    const notiPopup = notifications && notifications.length > 0 &&
+
+
+    const renderNotification = (i, n) => {
+      const getText = () => {
+        if (n.content.text) {
+          return n.content.text;
+        }
+
+        if (n.type === 'Post') {
+          if (n.subType === 'Photo') {
+            return 'upload new photo';
+          } else {
+            return 'post new ' + n.subType.toLowerCase();
+          }
+        }
+        return 'unsupported notification';
+      };
+
+      const onClick = () =>
+      {
+        API.markNotificationsAsRead([n.id]).then(() => {
+          this.props.dataAction.searchNotifications();
+            if (!n.content.text) { // goto review
+              this.setState({redirectTo: `/setting`, redirectSearch: '?tab=For Review'});
+            } else { // goto veteran
+              this.setState({redirectTo: `/dashboard/${n.content.veteranId}`});
+            }
+          }
+        ).catch(err => CommonService.showError(CommonService.getErrorMsg(err)));
+      };
+
+      if (n.type === 'Post') {
+        return (
+          <div key={i} className="notification-list-item" onClick={onClick}>
+            <div className="notification-group">
+              <span className={`notification-icon ${n.subType.toLowerCase()}`}/>
+              <span className="notification-user">{n.createdBy.username}</span>
+              <span> {getText()}</span>
+            </div>
+            <span className="notification-date">{timeAgo.format(new Date(n.createdAt))}</span>
+          </div>
+        )
+      } else if (n.type === 'Nok') {
+        return (
+          <div key={i} className="notification-list-item" onClick={onClick}>
+            <div className="notification-group">
+              <span> {getText()}</span>
+            </div>
+            <span className="notification-date">{timeAgo.format(new Date(n.createdAt))}</span>
+          </div>
+        );
+      }
+    };
+    const notiPopup = notifications && notifications.total > 0 &&
       (
         <div className="notification-popup">
           <h2>Notification</h2>
-          <a className="close" onClick={this.$s({ isNotiPopupActive: false })}> </a>
+          <a className="close" onClick={this.$s({isNotiPopupActive: false})}> </a>
           {
-            notifications.map((n, i) => (
-              <div key={i} className="notification-list-item">
-                <div className="notification-group">
-                  <span className={`notification-icon ${n.type}`}/>
-                  <span className="notification-user">{n.user}</span>
-                  <span> {n.action}</span>
-                </div>
-                <span className="notification-date">{n.date}</span>
-              </div>
-            ))
+            notifications.items.map((n, i) => renderNotification(i, n))
           }
         </div>
       );
@@ -385,7 +441,8 @@ class Masterhead extends Component {
     return (
       <div className={"main-header-page " + addClass}>
         {this.state.showSpinner && <Spinner/>}
-        {this.state.redirectTo && <Redirect to={{ pathname: this.state.redirectTo }}/>}
+        {this.state.redirectTo &&
+        <Redirect push to={{pathname: this.state.redirectTo, search: this.state.redirectSearch}}/>}
         <div className="viewport">
           <NavLink to="/" className="logo"><strong>Veterans</strong><br className="title-line-breaker"/> <span>Legacy Memorial</span>
           </NavLink>
@@ -418,16 +475,16 @@ class Masterhead extends Component {
               : (
                 <div className="logger-area">
                   <span className="notification-wrap"
-                        onClick={this.$s({ isNotiPopupActive: !this.state.isNotiPopupActive })}>
+                        onClick={this.$s({isNotiPopupActive: !this.state.isNotiPopupActive})}>
                     <a className="notification-link"> </a>
                     {
-                      notifications && notifications.length > 0 &&
-                      <span className="notification-num">{notifications.length}</span>
+                      notifications && notifications.total > 0 &&
+                      <span className="notification-num">{notifications.total}</span>
                     }
                     {
-                      this.state.isNotiPopupActive && notifications && notifications.length > 0 &&
+                      this.state.isNotiPopupActive && notifications && notifications.total > 0 &&
                       <div>
-                        <span className="pa"/>
+                        <span className="pa hide-md"/>
                         <div className="hide-md">
                           {notiPopup}
                         </div>
@@ -448,7 +505,7 @@ class Masterhead extends Component {
           }
 
           {
-            this.state.isNotiPopupActive && notifications && notifications.length > 0 &&
+            this.state.isNotiPopupActive && notifications && notifications.total > 0 &&
             <div className="show-md">
               {notiPopup}
             </div>
@@ -580,7 +637,7 @@ class Masterhead extends Component {
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Date of Birth' }}>
+                  <Toggler attr={{title: 'Date of Birth'}}>
                     <div className="toggler-con fx fields-3">
                       <div className="gr gr-1">
                         <h6>Month</h6>
@@ -600,7 +657,7 @@ class Masterhead extends Component {
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Date of Passing' }}>
+                  <Toggler attr={{title: 'Date of Passing'}}>
                     <div className="toggler-con fx fields-3">
                       <div className="gr gr-1">
                         <h6>Month</h6>
@@ -620,7 +677,7 @@ class Masterhead extends Component {
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Burial Location' }}>
+                  <Toggler attr={{title: 'Burial Location'}}>
                     <div className="toggler-con">
                       <select className="selectctrl" value={this.state.cemeteryId}
                               onChange={(event) => this.handleChange('cemeteryId', event.target.value)}>
@@ -634,21 +691,21 @@ class Masterhead extends Component {
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Location Served' }}>
+                  <Toggler attr={{title: 'Location Served'}}>
                     <div className="toggler-con">
                       <input type="text" className="textctrl fluid" value={this.state.served}
                              onChange={(event) => this.handleChange('served', event.target.value)}/>
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Division' }}>
+                  <Toggler attr={{title: 'Division'}}>
                     <div className="toggler-con">
                       <input type="text" className="textctrl fluid" value={this.state.division}
                              onChange={(event) => this.handleChange('division', event.target.value)}/>
                     </div>
                   </Toggler>
 
-                  <Toggler attr={{ title: 'Squadron / Ship' }}>
+                  <Toggler attr={{title: 'Squadron / Ship'}}>
                     <div className="toggler-con">
                       <input type="text" value={this.state.squadronShip} className="textctrl fluid"
                              onChange={(event) => this.handleChange('squadronShip', event.target.value)}/>

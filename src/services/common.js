@@ -1,12 +1,31 @@
 import {
   DEFAULT_SERVER_ERROR
 } from '../config';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import * as NProgress from 'nprogress';
 import * as moment from 'moment';
-import {createBrowserHistory} from 'history';
+import { createBrowserHistory } from 'history';
 
 const browserHistory = createBrowserHistory();
+
+// use new progress
+let __requestCount = 0;
+
+function startNProgress() {
+  if (__requestCount <= 0) {
+    NProgress.start();
+  }
+  __requestCount += 1;
+  console.log(`new request, request count = ${__requestCount}`);
+}
+
+function doneNProgress() {
+  __requestCount -= 1;
+  if (__requestCount <= 0) {
+    NProgress.done();
+  }
+  console.log(`request done, request count = ${__requestCount}`);
+}
 
 export default class CommonService {
 
@@ -41,9 +60,9 @@ export default class CommonService {
    */
   static showError(err) {
     if (typeof err === 'string') {
-      toast(err, { type: 'error' });
+      toast(err, {type: 'error'});
     } else {
-      toast(this.getErrorMsg(err), { type: 'error' })
+      toast(this.getErrorMsg(err), {type: 'error'})
     }
   }
 
@@ -52,7 +71,7 @@ export default class CommonService {
    * @param msg the text msg
    */
   static showSuccess(msg) {
-    toast(msg, { type: 'info' });
+    toast(msg, {type: 'info'});
   }
 
   static doRequest() {
@@ -61,13 +80,13 @@ export default class CommonService {
 
   static progressInterceptor(req) {
     req.on('request', () => {
-      NProgress.start();
+      startNProgress();
     });
     req.on('response', () => {
-      NProgress.done();
+      doneNProgress();
     });
     req.on('error', () => {
-      NProgress.done();
+      doneNProgress();
     });
   }
 
@@ -110,5 +129,22 @@ export default class CommonService {
   static validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+  }
+
+  /**
+   * get query param
+   */
+  static getParameterByName(name) {
+    var url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+      results = regex.exec(url);
+    if (!results) {
+      return null;
+    }
+    if (!results[2]) {
+      return '';
+    }
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
   }
 }

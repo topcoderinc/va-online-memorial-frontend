@@ -14,6 +14,7 @@ const defaultState = {
   myPosts: {},
   flaggedPosts: {},
   veteranNames: {},
+  notifications: {},
   users: {},
 };
 
@@ -75,6 +76,8 @@ export default (state = defaultState, action) => {
         ...state,
         myPosts: action.data
       };
+    case types.LOAD_NOTIFICATIONS:
+      return {...state, notifications: action.data};
     case types.LOAD_NOK_ARCHIVED_REQUEST:
       return {
         ...state,

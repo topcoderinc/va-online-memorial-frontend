@@ -19,16 +19,21 @@ import { VETERAN_NAME_LIMIT, DEFAULT_PROFILE_DATA, DEAULT_USER_LIMIT } from "../
 import AuthService from "../../services/auth";
 import './setting.scss';
 import AdminUserManager from "../../components/AdminUserManager";
+import CommonService from "../../services/common";
+
+const getInitActiveMenu = (isAdmin) => {
+  const urlMenu = CommonService.getParameterByName("tab");
+  if (isAdmin) {
+    return urlMenu || 'Flagged Posts';
+  }
+  return urlMenu || 'Basic Details';
+};
 
 class Setting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeMenu: props.admin ?
-        // 'User Management'
-        'Flagged Posts'
-        :
-        'Basic Details',
+      activeMenu: getInitActiveMenu(props.admin),
     };
     this.updateBaseProfile = this.updateBaseProfile.bind(this);
     this.deactivate = this.deactivate.bind(this);
@@ -52,7 +57,7 @@ class Setting extends Component {
       this.props.dataAction.getData();
       if (currentUser.role !== 'admin') {
         this.props.dataAction.getPreferences();
-        this.props.dataAction.getNOKRequests({userId: currentUser.id});
+        this.props.dataAction.getNOKRequests({userId: currentUser.id, status: 'Approved'});
         this.props.dataAction.getMyPosts();
         this.props.dataAction.getReviewPosts();
         this.props.dataAction.getVeteransName({limit: VETERAN_NAME_LIMIT});
@@ -67,6 +72,7 @@ class Setting extends Component {
 
   activateMenu = (menu) => {
     if (menu !== this.state.activeMenu) {
+      window.history.replaceState(null, null, window.location.pathname);
       this.setState({
         activeMenu: menu,
         showMenu: false,
