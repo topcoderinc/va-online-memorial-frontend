@@ -5,6 +5,7 @@ import AuthService from "../services/auth";
 import fileSaver from 'file-saver';
 import {toast} from 'react-toastify';
 import {map, assign, each, keys, lowerCase, cloneDeep} from 'lodash';
+import CommonService from "../services/common";
 
 /**
  * handle flagged to match frontend structure
@@ -77,6 +78,9 @@ function loadMyPosts(data) {
   return { type: types.LOAD_MY_POSTS, data };
 }
 
+function loadNotifications(data) {
+  return {type: types.LOAD_NOTIFICATIONS, data};
+}
 // load review posts
 function loadReviewPosts(data) {
   return { type: types.LOAD_REVIEW_POSTS, data };
@@ -212,15 +216,21 @@ function updatePreferences(preferences) {
  * @param veteranId veteran id
  * @param fullName user full name
  * @param email user email
+ * @param cb the success callback
  * @returns {Function}
  */
-function createNextOfKin(files, userId, veteranId, fullName, email) {
+function createNextOfKin(files, userId, veteranId, fullName, email, cb) {
   return function (dispatch) {
     API.createNextOfKin(files, userId, veteranId, fullName, email).then(() => {
-      API.getNOKRequests({ userId }).then(data => {
+      setTimeout(() => API.getNOKRequests({userId}).then(data => {
         dispatch(loadNOKRequests(data));
-      });
+      }), 10);
       toast('request send success, please wait for review', { type: 'info' });
+      if (cb) {
+        cb();
+      }
+    }).catch(err => {
+      toast(CommonService.getErrorMsg(err), {type: 'error'});
     });
   }
 }
@@ -234,6 +244,7 @@ function createNextOfKin(files, userId, veteranId, fullName, email) {
 function deleteNOKRequest(userId, id) {
   return function (dispatch) {
     API.deleteNOKRequest(id).then(() => {
+      toast('Delete Nok success', { type: 'info' });
       API.getNOKRequests({ userId }).then(data => {
         dispatch(loadNOKRequests(data));
       });
@@ -369,7 +380,9 @@ function approveRequest(id) {
   return function (dispatch) {
     API.approveRequest(id).then(() => {
       updateRequest(dispatch);
-      toast('approve success', { type: 'info' });
+      toast('approve success', {type: 'info'});
+    }).catch(err => {
+      toast(CommonService.getErrorMsg(err), {type: 'error'});
     });
   };
 }
@@ -466,6 +479,13 @@ function downloadFile(file) {
   }
 }
 
+
+function searchNotifications(query) {
+  return function (dispatch) {
+    API.searchNotifications(query).then(data => dispatch(loadNotifications(data)));
+  }
+}
+
 export default {
   getData,
   loadData,
@@ -474,6 +494,7 @@ export default {
   getAllBranches,
   getAllCemeteries,
   resetFilter,
+  searchNotifications,
   getPreferences,
   updatePreferences,
   createNextOfKin,

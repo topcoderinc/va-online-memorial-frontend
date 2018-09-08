@@ -23,9 +23,7 @@ class SettingRequest extends React.Component{
   }
 
   onDrop = files => {
-    this.setState({
-      files,
-    });
+    this.setState({files});
   };
 
   onChange(value) {
@@ -46,7 +44,9 @@ class SettingRequest extends React.Component{
 
     if (veteranIsNotSelected || nofilesUploaded) return;
 
-    this.props.createNokRequest(files, veteranId);
+    this.props.createNokRequest(files, veteranId, () => {
+      this.setState({veteranId: '', files: []})
+    });
   }
 
   deleteNokRequest(id) {
@@ -86,18 +86,18 @@ class SettingRequest extends React.Component{
           <div className="val">
             <Dropzone className="dropzone inline" onDrop={this.onDrop}>
               <div className="drop-con">
-                <div className="show-md">
+                <div className="show-md full-wd">
                   <span className="filelist">{
                     this.state.files.length>0
                       ? this.state.files.map(f => <span key={f.name} className="filename">{f.name}</span>)
                     : ''
                   }</span>
                 </div>
-                <div className="hide-md">
+                <div className="hide-md full-wd">
                   <span className="filelist">{
                     this.state.files.length>0
                       ? this.state.files.map(f => <span key={f.name} className="filename">{f.name}</span>)
-                    : 'Upload file'
+                    : ''
                   }</span>
                 </div>
                 <a className="btn btn-browse">Browse</a>

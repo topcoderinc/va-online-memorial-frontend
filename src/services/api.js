@@ -1,6 +1,6 @@
 import superagent from 'superagent';
 import superagentPromise from 'superagent-promise';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import * as Promise from 'bluebird';
 
 import {
@@ -9,7 +9,7 @@ import {
 import CommonService from "./common";
 import AuthService from "./auth";
 
-Promise.config( {
+Promise.config({
   cancellation: true
 });
 
@@ -27,7 +27,7 @@ const errorRedirect = (req) => {
       // do something else
     } else if (res.status === 403) {
       // do tip
-      toast(res.body.message || 'Operation forbidden', { type: 'error' });
+      toast(res.body.message || 'Operation forbidden', {type: 'error'});
     }
   });
 };
@@ -78,7 +78,6 @@ export default class APIService {
     return request
       .get(`${FALLBACK_API_URL}/v1/veterans/${id}/related`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
-      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }
@@ -314,6 +313,7 @@ export default class APIService {
       .get(`${FALLBACK_API_URL}/v1/veterans`)
       .query(clearInvalidParams(query))
       .use(errorRedirect)
+      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }
@@ -325,6 +325,7 @@ export default class APIService {
     return request
       .get(`${FALLBACK_API_URL}/v1/branches`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
       .use(errorRedirect)
       .end()
       .then((res) => res.body);
@@ -338,6 +339,7 @@ export default class APIService {
       .get(`${FALLBACK_API_URL}/v1/cemeteries`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
       .use(errorRedirect)
+      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }
@@ -403,6 +405,7 @@ export default class APIService {
       .get(`${FALLBACK_API_URL}/v1/me/notificationPreferences`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
       .use(errorRedirect)
+      .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);
   }
@@ -486,7 +489,7 @@ export default class APIService {
     return request
       .put(`${FALLBACK_API_URL}/v1/nextOfKins/${id}/reject`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
-      .send({ response: reasonForDecline })
+      .send({response: reasonForDecline})
       .use(errorRedirect)
       .use(CommonService.progressInterceptor)
       .end()
@@ -567,7 +570,7 @@ export default class APIService {
    */
   static deletePost(type, id) {
     return request
-      .del(`${FALLBACK_API_URL}/v1/${postUrl[ type ]}/${id}`)
+      .del(`${FALLBACK_API_URL}/v1/${postUrl[type]}/${id}`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
       .use(CommonService.progressInterceptor)
       .end()
@@ -585,7 +588,7 @@ export default class APIService {
       .accept('application/octet-stream')
       .end()
       .then((res) => {
-        res.xhr.fileName = res.header[ 'content-filename' ];
+        res.xhr.fileName = res.header['content-filename'];
         return res.xhr;
       });
   }
@@ -597,7 +600,7 @@ export default class APIService {
    */
   static isSaluted(type, id) {
     return request
-      .get(`${FALLBACK_API_URL}/v1/${postUrl[ type ]}/${id}/isSaluted`)
+      .get(`${FALLBACK_API_URL}/v1/${postUrl[type]}/${id}/isSaluted`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
       .use(CommonService.progressInterceptor)
       .end()
@@ -611,7 +614,7 @@ export default class APIService {
    */
   static salutePost(type, id) {
     return request
-      .put(`${FALLBACK_API_URL}/v1/${postUrl[ type ]}/${id}/salute`)
+      .put(`${FALLBACK_API_URL}/v1/${postUrl[type]}/${id}/salute`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
       .use(CommonService.progressInterceptor)
       .end()
@@ -625,8 +628,35 @@ export default class APIService {
    */
   static sharePost(type, id) {
     return request
-      .put(`${FALLBACK_API_URL}/v1/${postUrl[ type ]}/${id}/share`)
+      .put(`${FALLBACK_API_URL}/v1/${postUrl[type]}/${id}/share`)
       .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .use(CommonService.progressInterceptor)
+      .end()
+      .then((res) => res.body);
+  }
+
+  /**
+   * search notifications
+   */
+  static searchNotifications(query) {
+    return request
+      .get(`${FALLBACK_API_URL}/v1/notifications`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .query(query)
+      .use(CommonService.progressInterceptor)
+      .end()
+      .then((res) => res.body);
+  }
+
+  /**
+   * mark notifications as read
+   * @param ids the id arr
+   */
+  static markNotificationsAsRead(ids) {
+    return request
+      .put(`${FALLBACK_API_URL}/v1/notifications`)
+      .set('Authorization', `Bearer ${AuthService.getAccessToken()}`)
+      .send({ids})
       .use(CommonService.progressInterceptor)
       .end()
       .then((res) => res.body);

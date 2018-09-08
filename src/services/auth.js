@@ -69,7 +69,7 @@ export default class AuthService {
     if (user) {
       return user['accessToken'];
     } else {
-      CommonService.getBrowserHistory().push('/')
+      return null;
     }
   }
 

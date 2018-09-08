@@ -28,6 +28,10 @@
   }
   .fieldset{
     max-width: 500px;
+
+    .full-wd {
+      width: 100%;
+    }
   }
   .banner-accepted {
     margin-top: 40px;
@@ -106,7 +110,7 @@
       transform: translateX(-50%);
       &.passed{
         .progress-dot{
-          background-color: #0f73ba;          
+          background-color: #0f73ba;
         }
       }
     }

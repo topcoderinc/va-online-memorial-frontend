@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { map, get } from 'lodash';
+import { map, get, filter } from 'lodash';
 import dataAction from '../../actions/dataAction';
 import actions from '../../actions/auth';
 import MainHeaderComponent from '../../components/MainHeader';
@@ -19,16 +19,21 @@ import { VETERAN_NAME_LIMIT, DEFAULT_PROFILE_DATA, DEAULT_USER_LIMIT } from "../
 import AuthService from "../../services/auth";
 import './setting.scss';
 import AdminUserManager from "../../components/AdminUserManager";
+import CommonService from "../../services/common";
+
+const getInitActiveMenu = (isAdmin) => {
+  const urlMenu = CommonService.getParameterByName("tab");
+  if (isAdmin) {
+    return urlMenu || 'Flagged Posts';
+  }
+  return urlMenu || 'Basic Details';
+};
 
 class Setting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeMenu: props.admin ?
-        // 'User Management'
-        'Flagged Posts'
-        :
-        'Basic Details',
+      activeMenu: getInitActiveMenu(props.admin),
     };
     this.updateBaseProfile = this.updateBaseProfile.bind(this);
     this.deactivate = this.deactivate.bind(this);
@@ -67,6 +72,7 @@ class Setting extends Component {
 
   activateMenu = (menu) => {
     if (menu !== this.state.activeMenu) {
+      window.history.replaceState(null, null, window.location.pathname);
       this.setState({
         activeMenu: menu,
         showMenu: false,
@@ -111,10 +117,11 @@ class Setting extends Component {
    * create nok request
    * @param files the reqest files
    * @param veteranId the veteran id
+   * @package the success callback
    */
-  createNokRequest(files, veteranId) {
+  createNokRequest(files, veteranId, cb) {
     const {user} = this.props;
-    this.props.dataAction.createNextOfKin(files, user.id, veteranId, user.username, user.email);
+    this.props.dataAction.createNextOfKin(files, user.id, veteranId, user.username, user.email, cb);
   }
 
   updatePost() {
@@ -269,7 +276,7 @@ class Setting extends Component {
                   activeIndex={map(postsMenu.submenus, 'id').indexOf(activeMenu)}
                   className="setting-sidebar-menu"/>
                 {
-                  map(nokRequests.items, item => {
+                  map(filter(nokRequests.items, item => item.status === 'Approved'), item => {
                     return (
                       <NavLink key={item.id} to={`/dashboard/${item.veteran.id}`}
                                className={`setting-sidebar-link ${map(profileMenu.submenus, 'id').indexOf(activeMenu) > -1 ? 'active' : ''}`}>
