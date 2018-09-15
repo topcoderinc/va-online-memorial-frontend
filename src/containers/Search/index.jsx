@@ -201,7 +201,7 @@ class Search extends Component {
                   </div>
                 </Toggler>
 
-                <Toggler attr={{ title: 'Date of Passing', addClass: 'alt', 'isToggleDisabled': true }}>
+                <Toggler attr={{ title: 'Date of Death', addClass: 'alt', 'isToggleDisabled': true }}>
                   <div className="toggler-con fx fields-3">
                     <div className="gr gr-1">
                       <h6>Month</h6>
